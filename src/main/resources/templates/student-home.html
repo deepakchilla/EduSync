@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource Hub | EduSync</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #4361ee;
+            --primary-purple: #7209b7;
+            --primary-pink: #f72585;
+            --primary-teal: #4cc9f0;
+            --primary-green: #2ec4b6;
+            --light-bg: #f8f9fe;
+            --dark-text: #2d3748;
+            --card-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(67, 97, 238, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(247, 37, 133, 0.08) 0%, transparent 20%);
+            min-height: 100vh;
+        }
+        
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            background: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-purple);
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid white;
+            object-fit: cover;
+        }
+        
+        /* Hero Section with AI Background */
+        .hero-section {
+            background: 
+                linear-gradient(rgba(114, 9, 183, 0.85), rgba(67, 97, 238, 0.85)),
+                url('https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(3px);
+            z-index: 0;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-title {
+            font-weight: 800;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .hero-subtitle {
+            font-weight: 300;
+            font-size: 1.4rem;
+            max-width: 700px;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 2rem;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 16px;
+            text-align: center;
+            min-width: 150px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* Resource Cards */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 3rem;
+        }
+        
+        .resource-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(149, 157, 165, 0.3);
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            position: relative;
+        }
+        
+        .card-header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+        
+        .lecture-card .card-header::after {
+            background: linear-gradient(90deg, var(--primary-green), #3dd1c4);
+        }
+        
+        .video-card .card-header::after {
+            background: linear-gradient(90deg, var(--primary-pink), #ff5a9e);
+        }
+        
+        .reading-card .card-header::after {
+            background: linear-gradient(90deg, var(--primary-purple), #8a3ffb);
+        }
+        
+        .assignment-card .card-header::after {
+            background: linear-gradient(90deg, var(--primary-teal), #6edbf7);
+        }
+        
+        .resource-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .lecture-card .resource-icon {
+            background: linear-gradient(135deg, var(--primary-green), #3dd1c4);
+        }
+        
+        .video-card .resource-icon {
+            background: linear-gradient(135deg, var(--primary-pink), #ff5a9e);
+        }
+        
+        .reading-card .resource-icon {
+            background: linear-gradient(135deg, var(--primary-purple), #8a3ffb);
+        }
+        
+        .assignment-card .resource-icon {
+            background: linear-gradient(135deg, var(--primary-teal), #6edbf7);
+        }
+        
+        .card-title {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-text);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-text {
+            color: #718096;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+        
+        .resource-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        
+        .meta-info {
+            font-size: 0.9rem;
+            color: #a0aec0;
+        }
+        
+        .meta-info i {
+            margin-right: 5px;
+        }
+        
+        .download-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .lecture-card .download-btn {
+            background: linear-gradient(135deg, var(--primary-green), #3dd1c4);
+            color: white;
+        }
+        
+        .video-card .download-btn {
+            background: linear-gradient(135deg, var(--primary-pink), #ff5a9e);
+            color: white;
+        }
+        
+        .reading-card .download-btn {
+            background: linear-gradient(135deg, var(--primary-purple), #8a3ffb);
+            color: white;
+        }
+        
+        .assignment-card .download-btn {
+            background: linear-gradient(135deg, var(--primary-teal), #6edbf7);
+            color: #2d3748;
+        }
+        
+        .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: none;
+            background: #edf2f7;
+            color: #4a5568;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-btn.active, .filter-btn:hover {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            color: white;
+        }
+        
+        .search-container {
+            position: relative;
+            flex-grow: 1;
+            max-width: 400px;
+            margin-left: auto;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border-radius: 50px;
+            border: 2px solid #e2e8f0;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(114, 9, 183, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #2d3748, #1a202c);
+            color: #cbd5e0;
+            padding: 3rem 0 1.5rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .footer-links a {
+            display: block;
+            color: #cbd5e0;
+            text-decoration: none;
+            margin-bottom: 0.8rem;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 1.5rem;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .social-icon:hover {
+            background: var(--primary-purple);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .hero-stats {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .resource-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-container {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="d-flex justify-content-between align-items-center">
+                <a href="#" class="navbar-brand text-decoration-none">
+                    <div class="logo-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <span>EduSync</span>
+                </a>
+                
+                <div class="user-menu">
+                    <div class="dropdown">
+                        <button th:text="${name}" class="btn btn-link text-white dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&h=200&q=80" class="user-avatar">
+                            <span  class="ms-2"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-book me-2"></i>My Resources</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section with AI Background -->
+    <section class="hero-section">
+        <div class="container hero-content">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h1 class="hero-title">Your Learning Resources Hub</h1>
+                    <p class="hero-subtitle">Access all materials shared by your instructors. Download lecture notes, videos, readings, and assignments to support your studies anytime, anywhere.</p>
+                    
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">142</div>
+                            <div class="stat-label">Resources</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">28</div>
+                            <div class="stat-label">Courses</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Instructors</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <button class="filter-btn active"><i class="fas fa-layer-group"></i> All Resources</button>
+            <button class="filter-btn"><i class="fas fa-file-alt"></i> Lecture Notes</button>
+            <button class="filter-btn"><i class="fas fa-video"></i> Videos</button>
+            <button class="filter-btn"><i class="fas fa-book"></i> Readings</button>
+            <button class="filter-btn"><i class="fas fa-tasks"></i> Assignments</button>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search resources...">
+            </div>
+        </div>
+
+        <!-- Resource Grid -->
+        <div class="resource-grid">
+            <!-- Resource Card 1 -->
+            <div th:each="resource : ${resources}" class="resource-card lecture-card">
+                <div class="card-header">
+                    <div class="resource-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3 th:text="${resource.title}" class="card-title"></h3>
+                </div>
+                <div class="card-body">
+                    <p th:text="${resource.description}" class="card-text"></p>
+                    <div class="resource-meta">
+                        <div class="meta-info">
+                            <div><i class="fas fa-calendar-alt"></i> Posted: 15 Jan 2023</div>
+                            <div><i class="fas fa-file-pdf"></i> PDF (2.4MB)</div>
+                        </div>
+                        <a style="text-decoration: none;" th:href="@{/download/{id}(id=${resource.id})}" class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h4 class="footer-title">EduSync Learning</h4>
+                    <p>Empowering students and educators with seamless resource sharing and collaboration tools.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-md-2 col-6 mb-4">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <div class="footer-links">
+                        <a href="#">Dashboard</a>
+                        <a href="#">Courses</a>
+                        <a href="#">Resources</a>
+                        <a href="#">Calendar</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-2 col-6 mb-4">
+                    <h4 class="footer-title">Support</h4>
+                    <div class="footer-links">
+                        <a href="#">Help Center</a>
+                        <a href="#">FAQ</a>
+                        <a href="#">Contact Us</a>
+                        <a href="#">Feedback</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <h4 class="footer-title">Stay Updated</h4>
+                    <p>Subscribe to receive updates on new features and resources.</p>
+                    <div class="input-group mt-3">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-primary" style="background: var(--primary-purple); border: none;">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2023 EduSync Learning Platform. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.querySelectorAll('.download-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            // e.preventDefault(); // ❌ REMOVE or COMMENT OUT THIS LINE
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+            this.style.opacity = '0.9';
+            
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-check"></i> Downloaded!';
+                this.style.background = 'linear-gradient(135deg, #28a745, #2ecc71)';
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    if(this.closest('.lecture-card')) {
+                        this.style.background = 'linear-gradient(135deg, var(--primary-green), #3dd1c4)';
+                    } else if(this.closest('.video-card')) {
+                        this.style.background = 'linear-gradient(135deg, var(--primary-pink), #ff5a9e)';
+                    } else if(this.closest('.reading-card')) {
+                        this.style.background = 'linear-gradient(135deg, var(--primary-purple), #8a3ffb)';
+                    } else {
+                        this.style.background = 'linear-gradient(135deg, var(--primary-teal), #6edbf7)';
+                    }
+                    this.style.opacity = '1';
+                }, 1500);
+            }, 2000);
+        });
+    });
+
+    </script>
+</body>
+</html>

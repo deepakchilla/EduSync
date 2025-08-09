@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edusync - Collaborative Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4361ee',
+                        secondary: '#3f37c9',
+                        accent: '#4895ef',
+                        light: '#f8f9fa',
+                        dark: '#212529',
+                        faculty: '#3b82f6',
+                        student: '#10b981',
+                        darkblue: '#1e2a53',
+                        lightblue: '#f0f4ff'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Search Form Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.getElementById('searchForm');
+            const searchInput = document.getElementById('searchInput');
+            
+            // Add simple loading state
+            searchForm.addEventListener('submit', function() {
+                const searchButton = searchForm.querySelector('button');
+                searchButton.disabled = true;
+                searchButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Searching...';
+            });
+        });
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f9fafb;
+            color: #333;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .navbar-container {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .profile-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .profile-container:hover {
+            background: #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+        
+        .profile-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .faculty-icon {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+        
+        .student-icon {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .role-badge {
+            padding: 0.35rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            display: inline-block;
+            margin-top: 4px;
+        }
+        
+        .faculty-badge {
+            background: linear-gradient(to right, #3b82f6, #2563eb);
+            color: white;
+        }
+        
+        .student-badge {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+        }
+        
+        .logout-btn {
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logout-btn:hover {
+            background: #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .search-container {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .resource-card {
+            border-radius: 16px;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(67, 97, 238, 0.15);
+        }
+        
+        .file-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+        
+        .file-type-badge {
+            padding: 0.35rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .file-size-badge {
+            background: #f0f4ff;
+            color: #4361ee;
+            padding: 0.35rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .footer-container {
+            background: linear-gradient(to right, #1e2a53, #0f172a);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Professional Navbar with Enhanced Profile -->
+    <header class="navbar-container py-2 shadow-lg">
+        <div class="container mx-auto px-4 flex justify-between items-center min-h-[64px]">
+            <!-- Logo -->
+            <div class="flex items-center space-x-4">
+                <a th:href="@{/home}" class="flex items-center space-x-2 group">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-400 flex items-center justify-center shadow-xl group-hover:scale-105 transition-transform">
+                        <i class="fas fa-graduation-cap text-white text-2xl"></i>
+                    </div>
+                    <span class="text-2xl font-extrabold text-gray-800 tracking-tight">Edu<span class="text-indigo-600">sync</span></span>
+                </a>
+                
+                <!-- Navigation Links -->
+                <nav class="hidden lg:flex space-x-7 ml-6">
+                    <a th:href="@{/home}" class="text-gray-700 hover:text-indigo-600 font-semibold transition-colors">Home</a>
+                    <a href="#" class="text-gray-700 hover:text-indigo-600 font-semibold transition-colors">Courses</a>
+                    <a href="#" class="text-indigo-600 font-semibold transition-colors border-b-2 border-indigo-600">Resources</a>
+                    <a href="#" class="text-gray-700 hover:text-indigo-600 font-semibold transition-colors">Community</a>
+                    <a href="#" class="text-gray-700 hover:text-indigo-600 font-semibold transition-colors">Analytics</a>
+                </nav>
+            </div>
+            
+            <!-- Search and User Section -->
+            <div class="flex items-center space-x-5">
+                <!-- Search Bar -->
+                <form id="searchForm" th:action="@{/search}" method="get" class="hidden md:flex items-center bg-white border border-indigo-100 rounded-xl px-4 py-2 w-[350px] shadow-sm">
+                    <i class="fas fa-search text-indigo-400 mr-2"></i>
+                    <div class="flex-grow relative">
+                        <input 
+                            type="text" 
+                            id="searchInput"
+                            name="query" 
+                            th:value="${param.query}"
+                            placeholder="Search resources..." 
+                            class="bg-transparent w-full focus:outline-none placeholder-indigo-400 text-gray-700 text-sm pr-2"
+                            minlength="2">
+                    </div>
+                    <button type="submit" class="ml-2 bg-gradient-to-r from-indigo-600 to-blue-500 text-white rounded-lg px-4 py-1.5 text-xs font-semibold shadow hover:from-indigo-700 hover:to-blue-600 transition-colors flex-shrink-0">
+                        Search
+                    </button>
+                    <a th:if="${param.query}" th:href="@{/home}" class="ml-2 bg-gray-100 text-gray-600 rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-gray-200 transition-colors flex-shrink-0">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </form>
+                
+                <!-- Notification Icon -->
+                <div class="relative">
+                    <button class="p-2 text-indigo-500 hover:text-indigo-700 transition-colors">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                </div>
+                
+                <!-- User Profile -->
+                <div class="flex items-center space-x-3">
+                    <a th:href="@{/profile}" class="profile-container shadow p-2 gap-2">
+                        <div class="profile-icon bg-gradient-to-br from-indigo-500 to-blue-400 text-white w-9 h-9 text-base flex items-center justify-center overflow-hidden">
+                            <img th:if="${user.profilePicture != null}" 
+                                 th:src="@{'/profile-picture/' + ${user.id}}"
+                                 class="profile-pic w-full h-full object-cover"
+                                 th:alt="${user.name}"/>
+                            <span th:if="${user.profilePicture == null}" 
+                                  th:text="${user.name.substring(0,1)}">
+                            </span>
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-800 text-base" th:text="${user.name}"></div>
+                            <div th:class="${user.role == 'faculty'} ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs px-3 py-1 rounded-full font-semibold uppercase' : 'bg-gradient-to-r from-green-500 to-green-600 text-white text-xs px-3 py-1 rounded-full font-semibold uppercase'" th:text="${user.role}"></div>
+                        </div>
+                    </a>
+                    <a th:href="@{/logout}" class="bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg px-4 py-1.5 flex items-center space-x-2 hover:from-red-600 hover:to-pink-600 transition-colors logout-btn font-semibold shadow text-sm">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="py-10 bg-gradient-to-b from-indigo-50 to-white min-h-screen">
+        <div class="container mx-auto px-6">
+            <!-- Welcome Banner -->
+            <div class="bg-gradient-to-r from-indigo-600 to-blue-500 rounded-3xl p-12 mb-10 text-white shadow-xl">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight drop-shadow-lg">
+                            Welcome back, <span th:text="${user.name}"></span>!
+                        </h1>
+                        <p class="text-indigo-100 max-w-2xl text-lg" th:if="${user.role == 'faculty'}">
+                            Share educational resources with your students and colleagues
+                        </p>
+                        <p class="text-indigo-100 max-w-2xl text-lg" th:unless="${user.role == 'faculty'}">
+                            Access learning resources shared by your instructors and peers
+                        </p>
+                    </div>
+                    <div class="mt-8 md:mt-0">
+                        <a th:href="@{/upload}"
+                           class="bg-white text-indigo-600 px-7 py-3 rounded-2xl font-semibold shadow-lg inline-flex items-center hover:bg-indigo-50 border border-indigo-200 transition-colors"
+                           th:if="${user.role == 'faculty'}">
+                            <i class="fas fa-plus mr-2"></i> Upload Resource
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search and Filter Section -->
+            <div class="search-container mb-10 p-8 flex flex-col items-center shadow-lg border-0 bg-white/90">
+                <h2 class="text-2xl font-extrabold text-indigo-700 mb-6 text-center tracking-tight">Filter Resources</h2>
+                <div class="flex flex-wrap gap-5 justify-center w-full">
+                    <button class="bg-gradient-to-r from-indigo-600 to-blue-500 text-white px-7 py-2 rounded-xl font-semibold shadow hover:from-indigo-700 hover:to-blue-600 transition-colors">All</button>
+                    <button class="bg-gray-100 text-gray-700 px-7 py-2 rounded-xl font-semibold hover:bg-indigo-50 border border-indigo-100 flex items-center gap-2">
+                        <i class="fas fa-file-pdf text-red-500"></i> PDF
+                    </button>
+                    <button class="bg-gray-100 text-gray-700 px-7 py-2 rounded-xl font-semibold hover:bg-indigo-50 border border-indigo-100 flex items-center gap-2">
+                        <i class="fas fa-file-image text-pink-500"></i> Images
+                    </button>
+                    <button class="bg-gray-100 text-gray-700 px-7 py-2 rounded-xl font-semibold hover:bg-indigo-50 border border-indigo-100 flex items-center gap-2">
+                        <i class="fas fa-file-video text-blue-500"></i> Videos
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Resource Cards Grid -->
+            <div>
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800 tracking-tight">Learning Resources</h2>
+                    <div class="text-gray-600 text-lg">
+                        <span class="font-bold text-indigo-600" th:text="${resources.size()}">12</span> resources available
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Resource Card (Thymeleaf loop) -->
+                    <div class="resource-card shadow-lg hover:shadow-2xl transition-shadow duration-300" th:each="resource : ${resources}">
+                        <div class="p-7 flex-grow flex flex-col">
+                            <div class="flex justify-between items-start mb-6">
+                                <div th:if="${resource.fileType.startsWith('image')}" class="file-icon bg-pink-100 text-pink-600">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                                <div th:if="${resource.fileType.startsWith('video')}" class="file-icon bg-blue-100 text-blue-600">
+                                    <i class="fas fa-video"></i>
+                                </div>
+                                <div th:if="${resource.fileType.contains('pdf')}" class="file-icon bg-red-100 text-red-600">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <div th:if="${resource.fileType.contains('word')}" class="file-icon bg-blue-100 text-blue-600">
+                                    <i class="fas fa-file-word"></i>
+                                </div>
+                                <div th:if="${resource.fileType.contains('excel')}" class="file-icon bg-green-100 text-green-600">
+                                    <i class="fas fa-file-excel"></i>
+                                </div>
+                                <div th:if="${resource.fileType.contains('powerpoint')}" class="file-icon bg-orange-100 text-orange-600">
+                                    <i class="fas fa-file-powerpoint"></i>
+                                </div>
+                                <div th:if="${!resource.fileType.startsWith('image') and !resource.fileType.startsWith('video') and !resource.fileType.contains('pdf') and !resource.fileType.contains('word') and !resource.fileType.contains('excel') and !resource.fileType.contains('powerpoint')}" class="file-icon bg-indigo-100 text-indigo-600">
+                                    <i class="fas fa-file"></i>
+                                </div>
+                                <div class="text-xs font-medium text-gray-400 italic">2 hours ago</div>
+                            </div>
+                            
+                            <h3 class="text-xl font-extrabold text-gray-800 mb-3 truncate" th:text="${resource.title}"></h3>
+                            <p class="text-gray-600 mb-5 line-clamp-3" th:text="${resource.description}"></p>
+                            
+                            <div class="flex flex-wrap gap-3 mb-5">
+                                <div class="file-type-badge bg-indigo-50 text-indigo-700 flex items-center gap-2">
+                                    <i class="fas fa-file"></i> 
+                                    <span th:text="${resource.fileType}"></span>
+                                </div>
+                                <div class="file-size-badge flex items-center gap-2">
+                                    <i class="fas fa-database"></i> 
+                                    <span th:text="${resource != null and resource.fileSize != null ? #numbers.formatDecimal(resource.fileSize / 1024.0, 1, 2) : '0.00'} + ' KB'" ></span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-3 mt-auto">
+                                <a th:href="@{/download/{id}(id=${resource.id})}" class="flex-1 bg-gradient-to-r from-indigo-600 to-blue-500 text-white py-2.5 px-4 rounded-xl text-center font-semibold hover:from-indigo-700 hover:to-blue-600 transition-colors shadow">
+                                    <i class="fas fa-download mr-2"></i> Download
+                                </a>
+                                <a th:href="@{/edit/{id}(id=${resource.id})}"
+                                   class="bg-gray-100 text-gray-700 p-2.5 rounded-xl hover:bg-indigo-100 border border-gray-200"
+                                   th:if="${user.role == 'faculty'}">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a th:href="@{/delete/{id}(id=${resource.id})}"
+                                   class="bg-red-100 text-red-600 p-2.5 rounded-xl hover:bg-red-200 border border-red-200"
+                                   th:if="${user.role == 'faculty'}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 px-6 py-4 flex items-center border-t border-gray-100 gap-4">
+                            <div th:class="${user.role == 'faculty'} ? 'faculty-icon' : 'student-icon'" class="profile-icon"></div>
+                            <div>
+                                <p class="text-base font-semibold text-gray-800" th:text="${user.name}"></p>
+                                <p class="text-xs text-gray-500" th:if="${user.role == 'faculty'}">Faculty Member</p>
+                                <p class="text-xs text-gray-500" th:unless="${user.role == 'faculty'}">Student</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Empty state -->
+                <div th:if="${resources.isEmpty()}" class="col-span-full text-center py-20">
+                    <div class="mx-auto mb-8">
+                        <div class="w-28 h-28 rounded-full bg-indigo-100 flex items-center justify-center mx-auto shadow">
+                            <i class="fas fa-folder-open text-indigo-600 text-4xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-gray-800 mb-4">No resources found</h3>
+                    <p class="text-gray-600 max-w-md mx-auto mb-10 text-lg">
+                        It looks like there are no resources uploaded yet. 
+                        <span th:if="${user.role == 'faculty'}">Be the first to share educational materials!</span>
+                        <span th:unless="${user.role == 'faculty'}">Check back later for learning resources.</span>
+                    </p>
+                    <a th:href="@{/upload}"
+                       class="bg-gradient-to-r from-indigo-600 to-blue-500 text-white px-7 py-3 rounded-2xl font-semibold inline-block shadow-md hover:from-indigo-700 hover:to-blue-600 transition-colors"
+                       th:if="${user.role == 'faculty'}">
+                        <i class="fas fa-plus mr-2"></i> Upload Resource
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-container py-16 mt-20">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-400 flex items-center justify-center shadow-xl mb-2">
+                            <i class="fas fa-graduation-cap text-white text-2xl"></i>
+                        </div>
+                        <span class="text-2xl font-extrabold text-white tracking-tight">Edu<span class="text-indigo-300">sync</span></span>
+                    </div>
+                    <p class="text-gray-300 mb-6 text-base">
+                        Collaborative learning platform for educators and students to share knowledge and resources.
+                    </p>
+                    <div class="flex space-x-4 mt-2">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-6 tracking-wide">Quick Links</h3>
+                    <ul class="space-y-4 text-base">
+                        <li><a th:href="@{/home}" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Courses</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Resources</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Community</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Faculty Hub</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-6 tracking-wide">Resources</h3>
+                    <ul class="space-y-4 text-base">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Documentation</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Tutorials</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Webinars</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-6 tracking-wide">Contact Us</h3>
+                    <ul class="space-y-4 text-gray-300 text-base">
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1 mr-3"></i>
+                            <span>support@edusync.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone-alt mr-3"></i>
+                            <span>+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-3"></i>
+                            <span>San Francisco, CA</span>
+                        </li>
+                        <li class="flex items-start mt-6">
+                            <div class="bg-gray-800 rounded-2xl p-4 w-full shadow">
+                                <p class="text-base mb-2">Subscribe to our newsletter</p>
+                                <div class="flex">
+                                    <input type="email" placeholder="Your email" class="bg-gray-700 text-white rounded-l-xl px-4 py-2 w-full focus:outline-none">
+                                    <button class="bg-gradient-to-r from-indigo-600 to-blue-500 text-white rounded-r-xl px-4">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
+                <p class="text-base">&copy; 2023 Edusync. All rights reserved. | Designed with <span class="text-pink-400">&#10084;&#65039;</span> for educators</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
