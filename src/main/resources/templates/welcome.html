@@ -3,390 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduSync - Educational Resource Manager</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>EduSync - Educational Resource Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#2563eb',
-                        secondary: '#0ea5e9',
-                        accent: '#8b5cf6',
-                        dark: '#1e293b',
-                        light: '#f8fafc'
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        
-        .resource-card {
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            overflow: hidden;
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        
-        .resource-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.15);
-            border-color: #93c5fd;
-        }
-        
-        .file-icon {
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-        }
-        
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 24px;
-        }
-        
-        .hero-pattern {
-            background: radial-gradient(circle, rgba(37,99,235,0.1) 0%, rgba(255,255,255,0) 70%);
-        }
-        
-        .upload-btn {
-            background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
-            transition: all 0.3s ease;
-        }
-        
-        .upload-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
-        }
-        
-        .type-badge {
-            font-size: 0.75rem;
-            padding: 2px 10px;
-            border-radius: 20px;
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
     </style>
 </head>
-<body class="text-dark">
+<body class="bg-gray-50">
     <!-- Header -->
-    <header class="bg-white shadow-sm">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="bg-primary p-2 rounded-lg">
-                    <i class="fas fa-graduation-cap text-white text-2xl"></i>
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <h1 class="text-xl font-semibold text-gray-900">EduSync</h1>
                 </div>
-                <h1 class="text-2xl font-bold text-primary">EduSync</h1>
-            </div>
-            
-            <nav class="hidden md:block">
-                <ul class="flex space-x-8">
-                    <li><a th:href="@{/welcome}" class="font-medium text-primary hover:text-secondary">Home</a></li>
-                    <li><a href="#" class="font-medium text-gray-600 hover:text-primary">Resources</a></li>
-                    <li><a href="#" class="font-medium text-gray-600 hover:text-primary">Courses</a></li>
-                    <li><a href="#" class="font-medium text-gray-600 hover:text-primary">Faculty</a></li>
-                </ul>
-            </nav>
-            
-            <div class="flex items-center space-x-4">
-                <a href="/login" class="bg-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-secondary transition inline-flex items-center">
-                    <i class="fas fa-sign-in-alt mr-2"></i>Login
-                </a>
-
-                <button class="md:hidden text-gray-600">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
+                
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-indigo-600 font-medium">Home</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900">Resources</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900">About</a>
+                </nav>
+                
+                <div class="flex items-center space-x-3">
+                    <a href="/login" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                        Sign In
+                    </a>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="hero-pattern py-16">
-        <div class="container mx-auto px-4 text-center max-w-4xl">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6 text-dark">
-                Manage and Share <span class="text-primary">Educational Resources</span> with Ease
+    <section class="gradient-bg text-white py-20">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">
+                Share Knowledge,<br>Empower Learning
             </h1>
-            <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-                EduSync provides a seamless platform for faculty to upload learning materials and students to access them anytime, anywhere.
+            <p class="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
+                A simple platform for educators to share resources and students to access learning materials.
             </p>
-            <div class="flex justify-center space-x-4">
-                <a href="/login" class="upload-btn text-white px-8 py-3 rounded-lg font-bold text-lg">
-                    <i class="fas fa-cloud-upload-alt mr-2"></i>Upload Resources
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/login" class="bg-white text-indigo-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                    Get Started
                 </a>
-                <a href="/login" class="bg-white border border-primary text-primary px-8 py-3 rounded-lg font-bold text-lg hover:bg-primary hover:text-white transition">
-                    <i class="fas fa-graduation-cap mr-2"></i>Browse Courses
+                <a href="#resources" class="border border-white text-white px-6 py-3 rounded-lg font-medium hover:bg-white hover:text-indigo-600 transition-colors">
+                    Browse Resources
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- Stats Section -->
-    <section class="py-10 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                <div class="p-6">
-                    <div class="text-3xl font-bold text-primary">1,250+</div>
-                    <div class="text-gray-600">Resources Available</div>
+    <!-- Stats -->
+    <section class="py-12 bg-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-3xl font-bold text-indigo-600">1,200+</div>
+                    <div class="text-gray-600 text-sm">Resources</div>
                 </div>
-                <div class="p-6">
-                    <div class="text-3xl font-bold text-secondary">85+</div>
-                    <div class="text-gray-600">Faculty Members</div>
+                <div>
+                    <div class="text-3xl font-bold text-indigo-600">80+</div>
+                    <div class="text-gray-600 text-sm">Faculty</div>
                 </div>
-                <div class="p-6">
-                    <div class="text-3xl font-bold text-accent">4,500+</div>
-                    <div class="text-gray-600">Active Students</div>
+                <div>
+                    <div class="text-3xl font-bold text-indigo-600">4,000+</div>
+                    <div class="text-gray-600 text-sm">Students</div>
                 </div>
-                <div class="p-6">
-                    <div class="text-3xl font-bold text-primary">24/7</div>
-                    <div class="text-gray-600">Accessibility</div>
+                <div>
+                    <div class="text-3xl font-bold text-indigo-600">24/7</div>
+                    <div class="text-gray-600 text-sm">Access</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Main Content - Resource Cards -->
-    <main class="container mx-auto px-4 py-12">
-        <div class="flex justify-between items-center mb-10">
-            <h2 class="text-3xl font-bold text-dark">Learning Resources</h2>
-            <div class="flex space-x-3">
-                <select class="border border-gray-300 rounded-lg px-4 py-2">
-                    <option>All Courses</option>
-                    <option>Computer Science</option>
-                    <option>Mathematics</option>
-                    <option>Engineering</option>
-                    <option>Literature</option>
-                </select>
-                <select class="border border-gray-300 rounded-lg px-4 py-2">
-                    <option>Sort by: Newest</option>
-                    <option>Sort by: Oldest</option>
-                    <option>Sort by: Name</option>
-                </select>
+    <!-- Resources Preview -->
+    <section id="resources" class="py-16 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Recent Resources</h2>
+                <p class="text-gray-600">Explore the latest educational materials shared by our faculty</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Sample Resource Cards -->
+                <div class="bg-white rounded-xl p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-file-pdf text-red-600"></i>
+                        </div>
+                        <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">PDF</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Introduction to Algorithms</h3>
+                    <p class="text-gray-600 text-sm mb-4">Comprehensive guide to fundamental algorithms and data structures.</p>
+                    <div class="flex items-center justify-between text-sm text-gray-500">
+                        <span>Prof. Wilson</span>
+                        <a href="/login" class="text-indigo-600 hover:text-indigo-700">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-file-word text-blue-600"></i>
+                        </div>
+                        <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">DOCX</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Calculus Study Notes</h3>
+                    <p class="text-gray-600 text-sm mb-4">Detailed notes on differential and integral calculus concepts.</p>
+                    <div class="flex items-center justify-between text-sm text-gray-500">
+                        <span>Dr. Johnson</span>
+                        <a href="/login" class="text-indigo-600 hover:text-indigo-700">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-file-powerpoint text-orange-600"></i>
+                        </div>
+                        <span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full">PPTX</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Database Systems</h3>
+                    <p class="text-gray-600 text-sm mb-4">Presentation covering relational database design principles.</p>
+                    <div class="flex items-center justify-between text-sm text-gray-500">
+                        <span>Prof. Chen</span>
+                        <a href="/login" class="text-indigo-600 hover:text-indigo-700">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="/login" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                    View All Resources
+                </a>
             </div>
         </div>
+    </section>
 
-        <!-- Dynamic Resource Cards Section -->
-        <div class="card-grid">
-            <!-- Resource Card 1 -->
-            <div class="resource-card bg-white">
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="file-icon bg-blue-100 text-blue-600">
-                            <i class="fas fa-file-pdf text-2xl"></i>
-                        </div>
-                        <span class="type-badge bg-blue-100 text-blue-600">PDF</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Introduction to Algorithms</h3>
-                    <p class="text-gray-600 mb-4">Comprehensive guide to fundamental algorithms and data structures.</p>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="text-sm text-gray-500">Prof. James Wilson</div>
-                            <div class="text-sm text-gray-500">Computer Science 101</div>
-                        </div>
-                        <span class="text-xs text-gray-500">12 MB</span>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-6 py-3 flex justify-between items-center">
-                    <span class="text-sm text-gray-500">Uploaded: 3 days ago</span>
-                    <a href="http://localhost:8080/login" class="text-primary hover:text-secondary">
-                        <i class="fas fa-download"></i>
-                    </a>
-                </div>
+    <!-- Features -->
+    <section class="py-16 bg-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Simple & Effective</h2>
+                <p class="text-gray-600">Everything you need for educational resource management</p>
             </div>
 
-            <!-- Resource Card 2 -->
-            <div class="resource-card bg-white">
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="file-icon bg-purple-100 text-purple-600">
-                            <i class="fas fa-file-word text-2xl"></i>
-                        </div>
-                        <span class="type-badge bg-purple-100 text-purple-600">DOCX</span>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-upload text-indigo-600 text-xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">Calculus Study Notes</h3>
-                    <p class="text-gray-600 mb-4">Detailed notes on differential and integral calculus concepts.</p>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="text-sm text-gray-500">Dr. Sarah Johnson</div>
-                            <div class="text-sm text-gray-500">Mathematics 202</div>
-                        </div>
-                        <span class="text-xs text-gray-500">5.2 MB</span>
-                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Easy Upload</h3>
+                    <p class="text-gray-600 text-sm">Faculty can quickly upload and organize learning materials</p>
                 </div>
-                <div class="bg-gray-50 px-6 py-3 flex justify-between items-center">
-                    <span class="text-sm text-gray-500">Uploaded: 1 week ago</span>
-                    <a th:href="@{/login}" class="text-primary hover:text-secondary">
-                        <i class="fas fa-download"></i>
-                    </a>
-                </div>
-            </div>
 
-            <!-- Resource Card 3 -->
-            <div class="resource-card bg-white">
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="file-icon bg-red-100 text-red-600">
-                            <i class="fas fa-file-powerpoint text-2xl"></i>
-                        </div>
-                        <span class="type-badge bg-red-100 text-red-600">PPTX</span>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-search text-indigo-600 text-xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">Database Systems Lecture</h3>
-                    <p class="text-gray-600 mb-4">Presentation covering relational database design principles.</p>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="text-sm text-gray-500">Prof. Robert Chen</div>
-                            <div class="text-sm text-gray-500">Computer Science 305</div>
-                        </div>
-                        <span class="text-xs text-gray-500">8.7 MB</span>
-                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Smart Search</h3>
+                    <p class="text-gray-600 text-sm">Students can easily find resources by course or topic</p>
                 </div>
-                <div class="bg-gray-50 px-6 py-3 flex justify-between items-center">
-                    <span class="text-sm text-gray-500">Uploaded: 2 days ago</span>
-                    <button th:href="@{/login}" class="text-primary hover:text-secondary">
-                        <i class="fas fa-download"></i>
-                    </button>
-                </div>
-            </div>
 
-            <!-- Resource Card 4 -->
-            <div class="resource-card bg-white">
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="file-icon bg-green-100 text-green-600">
-                            <i class="fas fa-file-excel text-2xl"></i>
-                        </div>
-                        <span class="type-badge bg-green-100 text-green-600">XLSX</span>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-mobile-alt text-indigo-600 text-xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">Statistics Lab Exercises</h3>
-                    <p class="text-gray-600 mb-4">Practice datasets and problems for statistical analysis.</p>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="text-sm text-gray-500">Dr. Emily Watson</div>
-                            <div class="text-sm text-gray-500">Statistics 150</div>
-                        </div>
-                        <span class="text-xs text-gray-500">3.1 MB</span>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-6 py-3 flex justify-between items-center">
-                    <span class="text-sm text-gray-500">Uploaded: 5 days ago</span>
-                    <button th:href="@{/login}" class="text-primary hover:text-secondary">
-                        <i class="fas fa-download"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Features Section -->
-    <section class="bg-white py-16">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center text-dark mb-16">Why Choose EduSync?</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                <div class="text-center px-6">
-                    <div class="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-6">
-                        <i class="fas fa-cloud-upload-alt text-3xl text-primary"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Easy Resource Upload</h3>
-                    <p class="text-gray-600">Faculty can effortlessly upload documents, presentations, and other learning materials with our intuitive interface.</p>
-                </div>
-                <div class="text-center px-6">
-                    <div class="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-6">
-                        <i class="fas fa-search text-3xl text-primary"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Powerful Search</h3>
-                    <p class="text-gray-600">Students can quickly find resources by course, professor, or keywords with our advanced search capabilities.</p>
-                </div>
-                <div class="text-center px-6">
-                    <div class="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-6">
-                        <i class="fas fa-mobile-alt text-3xl text-primary"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Mobile Friendly</h3>
-                    <p class="text-gray-600">Access educational resources anytime, anywhere with our fully responsive design that works on all devices.</p>
+                    <h3 class="font-semibold text-gray-900 mb-2">Mobile Ready</h3>
+                    <p class="text-gray-600 text-sm">Access resources anywhere, anytime on any device</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-12">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
                 <div>
                     <div class="flex items-center space-x-3 mb-4">
-                        <div class="bg-primary p-2 rounded-lg">
-                            <i class="fas fa-book-open text-white text-xl"></i>
+                        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white text-sm"></i>
                         </div>
-                        <h3 class="text-xl font-bold">EduSync</h3>
+                        <h3 class="text-lg font-semibold">EduSync</h3>
                     </div>
-                    <p class="text-gray-300 mb-4">
-                        Simplifying educational resource management for institutions.
+                    <p class="text-gray-400 text-sm">
+                        Simplifying educational resource management for modern institutions.
                     </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Platform</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">Resources</a></li>
+                        <li><a href="#" class="hover:text-white">Courses</a></li>
+                        <li><a href="#" class="hover:text-white">Faculty</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Connect</h4>
                     <div class="flex space-x-4">
-                        <a href="#" class="text-gray-300 hover:text-white">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-white">
+                        <a href="#" class="text-gray-400 hover:text-white">
                             <i class="fab fa-twitter"></i>
                         </a>
-                        <a href="#" class="text-gray-300 hover:text-white">
-                            <i class="fab fa-linkedin-in"></i>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-linkedin"></i>
                         </a>
-                        <a href="#" class="text-gray-300 hover:text-white">
-                            <i class="fab fa-instagram"></i>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-github"></i>
                         </a>
                     </div>
                 </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 hover:text-white">Home</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white">Resources</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white">Courses</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white">Faculty Portal</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white">Student Portal</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Resources</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 hover:text-white">Documentation</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white">Tutorials</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white">Support</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white">FAQ</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white">Blog</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Contact Us</h4>
-                    <ul class="space-y-2">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt mt-1 mr-3 text-gray-300"></i>
-                            <span class="text-gray-300">123 Education St, Campus City</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-phone mt-1 mr-3 text-gray-300"></i>
-                            <span class="text-gray-300">(555) 123-4567</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-envelope mt-1 mr-3 text-gray-300"></i>
-                            <span class="text-gray-300">support@edusync.edu</span>
-                        </li>
-                    </ul>
-                </div>
             </div>
-            <div class="border-t border-gray-700 mt-10 pt-6 text-center text-gray-400">
-                <p>&copy; 2023 EduSync. All rights reserved. Built with SpringBoot, Java, and MySQL.</p>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+                <p>&copy; 2023 EduSync. All rights reserved.</p>
             </div>
         </div>
     </footer>

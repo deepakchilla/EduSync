@@ -3,113 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edusync - Login</title>
+    <title>Sign In - EduSync</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        edusync: {
-                            primary: '#2563eb',
-                            secondary: '#0ea5e9',
-                            accent: '#7c3aed',
-                            dark: '#1e293b'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        .google-icon {
-            background: conic-gradient(from -45deg, #ea4335 110deg, #4285f4 90deg 180deg, #34a853 180deg 270deg, #fbbc05 270deg) 73% 55%/150% 150% no-repeat;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            -webkit-text-fill-color: transparent;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-edusync-primary to-edusync-secondary min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div class="p-8">
-            <div class="text-center mb-10">
-                <div class="flex justify-center mb-4">
-                    <div class="bg-edusync-primary p-3 rounded-xl">
-                        <i class="fas fa-graduation-cap text-white text-3xl"></i>
-                    </div>
-                </div>
-                <h1 class="text-3xl font-bold text-edusync-dark">Welcome to Edusync</h1>
-                <p class="text-gray-500 mt-2">Log in to continue your learning journey</p>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center py-12 px-4">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <div class="w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-graduation-cap text-white text-2xl"></i>
             </div>
+            <h2 class="text-3xl font-bold text-gray-900">Welcome back</h2>
+            <p class="mt-2 text-gray-600">Sign in to your EduSync account</p>
+        </div>
 
+        <!-- Form -->
+        <div class="bg-white py-8 px-6 shadow-sm rounded-xl border">
             <form th:action="@{/login}" method="post" class="space-y-6">
                 <div>
-                    <label  for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-envelope text-gray-400"></i>
-                        </div>
-                        <input name="email" type="email" id="email" class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-edusync-primary focus:border-transparent transition" placeholder="your@email.com">
-                    </div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email address</label>
+                    <input name="email" type="email" id="email" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                           placeholder="Enter your email">
                 </div>
 
                 <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <a href="#" class="text-sm text-edusync-primary hover:text-edusync-secondary transition">Forgot password?</a>
-                    </div>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-lock text-gray-400"></i>
-                        </div>
-                        <input name="password" type="password" id="password" class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-edusync-primary focus:border-transparent transition" placeholder="••••••••">
-                    </div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input name="password" type="password" id="password" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                           placeholder="Enter your password">
                 </div>
 
-                <button type="submit" class="w-full bg-edusync-primary hover:bg-edusync-secondary text-white font-semibold py-3 rounded-xl transition duration-300 transform hover:scale-[1.02]">
-                    Log In
+                <div th:if="${error}" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <span th:text="${error}"></span>
+                </div>
+
+                <button type="submit" 
+                        class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors">
+                    Sign In
                 </button>
             </form>
-            <div th:if="${error}" class="text-red-500 text-sm font-semibold mb-4" th:text="${error}"></div>
 
-
-            <div class="relative my-8">
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-gray-300"></div>
-                </div>
-                <div class="relative flex justify-center text-sm">
-                    <span class="px-2 bg-white text-gray-500">Or continue with</span>
-                </div>
-            </div>
-
-            <div class="flex gap-4 mb-8">
-                <a href="#" class="flex-1 flex items-center justify-center gap-2 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition">
-                    <!-- Using Font Awesome with custom styling for Google colors -->
-                    <i class="fab fa-google google-icon text-xl"></i>
-                    <span>Google</span>
-                </a>
-                <a href="#" class="flex-1 flex items-center justify-center gap-2 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition">
-                    <i class="fab fa-facebook text-blue-600 text-xl"></i>
-                    <span>Facebook</span>
-                </a>
-            </div>
-
-            <p th:text="${error}"></p>
-
-            <div class="text-center text-sm text-gray-600">
-                Don't have an account? 
-                <a href="/signup" class="font-medium text-edusync-primary hover:text-edusync-secondary transition">Sign up</a>
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Don't have an account? 
+                    <a href="/signup" class="font-medium text-indigo-600 hover:text-indigo-500">Sign up</a>
+                </p>
             </div>
         </div>
 
-        <div class="bg-gray-50 px-8 py-6 text-center">
-            <p class="text-xs text-gray-500">
-                © 2023 Edusync. All rights reserved. <br>
-                Empowering education through technology
-            </p>
+        <!-- Back to home -->
+        <div class="text-center">
+            <a href="/welcome" class="text-sm text-gray-500 hover:text-gray-700">
+                <i class="fas fa-arrow-left mr-1"></i>
+                Back to home
+            </a>
         </div>
     </div>
 </body>
