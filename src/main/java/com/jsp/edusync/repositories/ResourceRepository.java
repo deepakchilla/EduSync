@@ -13,50 +13,23 @@ import java.util.List;
 @Repository
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
     
-    /**
-     * Find all resources by faculty
-     */
-    List<Resource> findByFaculty(User faculty);
+    List<Resource> findByUploadedBy(User uploadedBy);
     
-    /**
-     * Find all resources by faculty ID
-     */
-    List<Resource> findByFacultyId(Long facultyId);
+    List<Resource> findByUploadedById(Long uploadedById);
     
-    /**
-     * Find resources by title containing (case insensitive)
-     */
     @Query("SELECT r FROM Resource r WHERE LOWER(r.title) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<Resource> findByTitleContainingIgnoreCase(@Param("title") String title);
     
-    /**
-     * Find resources by file type
-     */
     List<Resource> findByFileType(String fileType);
     
-    /**
-     * Find resources uploaded after a certain date
-     */
-    List<Resource> findByUploadDateAfter(LocalDateTime date);
+    List<Resource> findByUploadedAtAfter(LocalDateTime date);
     
-    /**
-     * Find resources uploaded between two dates
-     */
-    List<Resource> findByUploadDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<Resource> findByUploadedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
     
-    /**
-     * Find all resources ordered by upload date (newest first)
-     */
-    List<Resource> findAllByOrderByUploadDateDesc();
+    List<Resource> findAllByOrderByUploadedAtDesc();
     
-    /**
-     * Count resources by faculty
-     */
-    long countByFaculty(User faculty);
+    long countByUploadedBy(User uploadedBy);
     
-    /**
-     * Find resources by description containing keywords
-     */
     @Query("SELECT r FROM Resource r WHERE LOWER(r.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Resource> findByDescriptionContainingIgnoreCase(@Param("keyword") String keyword);
 }

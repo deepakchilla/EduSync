@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class UserService {
@@ -16,6 +14,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     
+    /**
+     * Register a new user
+     */
     public User registerUser(String name, String email, String password, User.Role role) {
         if (userRepository.existsByEmail(email)) {
             throw new RuntimeException("Email already exists");
@@ -25,78 +26,94 @@ public class UserService {
         return userRepository.save(user);
     }
     
+    /**
+     * Authenticate user login
+     */
     public Optional<User> authenticateUser(String email, String password) {
         return userRepository.findByEmailAndPassword(email, password);
     }
     
+    /**
+     * Find user by email
+     */
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
     
+    /**
+     * Find user by ID
+     */
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
     
+    /**
+     * Get all users
+     */
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
     
+    /**
+     * Get users by role
+     */
     public List<User> getUsersByRole(User.Role role) {
         return userRepository.findByRole(role);
     }
     
+    /**
+     * Get all faculty members
+     */
+    public List<User> getAllFaculty() {
+        return userRepository.findByRole(User.Role.FACULTY);
+    }
+    
+    /**
+     * Get all students
+     */
+    public List<User> getAllStudents() {
+        return userRepository.findByRole(User.Role.STUDENT);
+    }
+    
+    /**
+     * Update user information
+     */
     public User updateUser(User user) {
         return userRepository.save(user);
     }
     
+    /**
+     * Delete user by ID
+     */
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
     
+    /**
+     * Check if email exists
+     */
     public boolean emailExists(String email) {
         return userRepository.existsByEmail(email);
     }
     
+    /**
+     * Search users by name
+     */
+    public List<User> searchUsersByName(String name) {
+        return userRepository.findByNameContainingIgnoreCase(name);
+    }
+    
+    /**
+     * Get user count by role
+     */
     public long getUserCountByRole(User.Role role) {
         return userRepository.countByRole(role);
     }
     
+    /**
+     * Get total user count
+     */
     public long getTotalUserCount() {
         return userRepository.count();
-    }
-    
-    public Map<String, Object> getUserStats(Long userId) {
-        Map<String, Object> stats = new HashMap<>();
-        
-        try {
-            Optional<User> userOpt = findById(userId);
-            if (userOpt.isPresent()) {
-                User user = userOpt.get();
-                
-                // Basic user info
-                stats.put("userId", user.getId());
-                stats.put("name", user.getName());
-                stats.put("email", user.getEmail());
-                stats.put("role", user.getRole());
-                stats.put("profilePicture", user.getProfilePicture());
-                stats.put("createdAt", user.getCreatedAt());
-                stats.put("lastLogin", user.getLastLogin());
-                
-                // Role-specific stats
-                if (user.getRole() == User.Role.FACULTY) {
-                    // Faculty stats (resources uploaded, etc.)
-                    stats.put("resourcesUploaded", 0); // TODO: Implement when ResourceService is ready
-                    stats.put("totalDownloads", 0);
-                } else {
-                    // Student stats (resources accessed, etc.)
-                    stats.put("resourcesAccessed", 0); // TODO: Implement when ResourceService is ready
-                    stats.put("lastAccess", null);
-                }
-            }
-        } catch (Exception e) {
-            stats.put("error", e.getMessage());
-        }
-        
-        return stats;
     }
 }

@@ -32,19 +32,6 @@ public class User {
     @Column(nullable = false)
     private Role role;
     
-    @Lob
-    @Column(name = "profile_picture", columnDefinition = "LONGBLOB")
-    private byte[] profilePicture;
-    
-    @Column(name = "profile_picture_type")
-    private String profilePictureType;
-    
-    @Column(name = "created_at")
-    private java.time.LocalDateTime createdAt;
-    
-    @Column(name = "last_login")
-    private java.time.LocalDateTime lastLogin;
-    
     public enum Role {
         FACULTY, STUDENT
     }
@@ -58,7 +45,6 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role;
-        this.createdAt = java.time.LocalDateTime.now();
     }
     
     // Getters and Setters
@@ -102,38 +88,6 @@ public class User {
         this.role = role;
     }
     
-    public byte[] getProfilePicture() {
-        return profilePicture;
-    }
-    
-    public void setProfilePicture(byte[] profilePicture) {
-        this.profilePicture = profilePicture;
-    }
-    
-    public String getProfilePictureType() {
-        return profilePictureType;
-    }
-    
-    public void setProfilePictureType(String profilePictureType) {
-        this.profilePictureType = profilePictureType;
-    }
-    
-    public java.time.LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-    
-    public void setCreatedAt(java.time.LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-    
-    public java.time.LocalDateTime getLastLogin() {
-        return lastLogin;
-    }
-    
-    public void setLastLogin(java.time.LocalDateTime lastLogin) {
-        this.lastLogin = lastLogin;
-    }
-    
     @Override
     public String toString() {
         return "User{" +
@@ -141,10 +95,6 @@ public class User {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", role=" + role +
-                ", profilePicture=" + (profilePicture != null ? "[" + profilePicture.length + " bytes]" : "null") +
-                ", profilePictureType='" + profilePictureType + '\'' +
-                ", createdAt=" + createdAt +
-                ", lastLogin=" + lastLogin +
                 '}';
     }
 }

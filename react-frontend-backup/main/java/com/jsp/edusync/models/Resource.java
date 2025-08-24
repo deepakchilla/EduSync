@@ -31,42 +31,32 @@ public class Resource {
     @Column(nullable = false)
     private String fileType;
     
-    @Column(nullable = false)
-    private Long fileSize;
-    
     @Lob
     @Column(nullable = false, columnDefinition = "LONGBLOB")
     private byte[] fileData;
     
     @NotNull(message = "Faculty ID is required")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "uploaded_by", nullable = false)
-    private User uploadedBy;
+    @JoinColumn(name = "faculty_id", nullable = false)
+    private User faculty;
     
     @Column(nullable = false)
-    private LocalDateTime uploadedAt;
-    
-    @Column(nullable = false)
-    private LocalDateTime lastModified;
+    private LocalDateTime uploadDate;
     
     // Default constructor
     public Resource() {
-        this.uploadedAt = LocalDateTime.now();
-        this.lastModified = LocalDateTime.now();
+        this.uploadDate = LocalDateTime.now();
     }
     
     // Constructor with parameters
-    public Resource(String title, String description, String fileName, String fileType, 
-                   Long fileSize, byte[] fileData, User uploadedBy) {
+    public Resource(String title, String description, String fileName, String fileType, byte[] fileData, User faculty) {
         this.title = title;
         this.description = description;
         this.fileName = fileName;
         this.fileType = fileType;
-        this.fileSize = fileSize;
         this.fileData = fileData;
-        this.uploadedBy = uploadedBy;
-        this.uploadedAt = LocalDateTime.now();
-        this.lastModified = LocalDateTime.now();
+        this.faculty = faculty;
+        this.uploadDate = LocalDateTime.now();
     }
     
     // Getters and Setters
@@ -110,14 +100,6 @@ public class Resource {
         this.fileType = fileType;
     }
     
-    public Long getFileSize() {
-        return fileSize;
-    }
-    
-    public void setFileSize(Long fileSize) {
-        this.fileSize = fileSize;
-    }
-    
     public byte[] getFileData() {
         return fileData;
     }
@@ -126,28 +108,20 @@ public class Resource {
         this.fileData = fileData;
     }
     
-    public User getUploadedBy() {
-        return uploadedBy;
+    public User getFaculty() {
+        return faculty;
     }
     
-    public void setUploadedBy(User uploadedBy) {
-        this.uploadedBy = uploadedBy;
+    public void setFaculty(User faculty) {
+        this.faculty = faculty;
     }
     
-    public LocalDateTime getUploadedAt() {
-        return uploadedAt;
+    public LocalDateTime getUploadDate() {
+        return uploadDate;
     }
     
-    public void setUploadedAt(LocalDateTime uploadedAt) {
-        this.uploadedAt = uploadedAt;
-    }
-    
-    public LocalDateTime getLastModified() {
-        return lastModified;
-    }
-    
-    public void setLastModified(LocalDateTime lastModified) {
-        this.lastModified = lastModified;
+    public void setUploadDate(LocalDateTime uploadDate) {
+        this.uploadDate = uploadDate;
     }
     
     @Override
@@ -158,9 +132,7 @@ public class Resource {
                 ", description='" + description + '\'' +
                 ", fileName='" + fileName + '\'' +
                 ", fileType='" + fileType + '\'' +
-                ", fileSize=" + fileSize +
-                ", uploadedAt=" + uploadedAt +
-                ", lastModified=" + lastModified +
+                ", uploadDate=" + uploadDate +
                 '}';
     }
 }

@@ -1,10 +1,10 @@
 package com.jsp.edusync.services;
 
+import com.jsp.edusync.models.AccessedResource;
 import com.jsp.edusync.models.Resource;
 import com.jsp.edusync.models.User;
-import com.jsp.edusync.models.ViewedResource;
+import com.jsp.edusync.repositories.AccessedResourceRepository;
 import com.jsp.edusync.repositories.ResourceRepository;
-import com.jsp.edusync.repositories.ViewedResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,12 +21,9 @@ public class ResourceService {
     private ResourceRepository resourceRepository;
     
     @Autowired
-    private ViewedResourceRepository viewedResourceRepository;
+    private AccessedResourceRepository accessedResourceRepository;
     
-    /**
-     * Upload a new resource
-     */
-    public Resource uploadResource(String title, String description, MultipartFile file, User faculty) throws IOException {
+    public Resource uploadResource(String title, String description, MultipartFile file, User uploadedBy) throws IOException {
         if (file.isEmpty()) {
             throw new RuntimeException("File cannot be empty");
         }
@@ -36,44 +33,30 @@ public class ResourceService {
             description,
             file.getOriginalFilename(),
             file.getContentType(),
+            file.getSize(),
             file.getBytes(),
-            faculty
+            uploadedBy
         );
         
         return resourceRepository.save(resource);
     }
     
-    /**
-     * Get all resources
-     */
     public List<Resource> getAllResources() {
-        return resourceRepository.findAllByOrderByUploadDateDesc();
+        return resourceRepository.findAllByOrderByUploadedAtDesc();
     }
     
-    /**
-     * Get resource by ID
-     */
     public Optional<Resource> getResourceById(Long id) {
         return resourceRepository.findById(id);
     }
     
-    /**
-     * Get resources by faculty
-     */
-    public List<Resource> getResourcesByFaculty(User faculty) {
-        return resourceRepository.findByFaculty(faculty);
+    public List<Resource> getResourcesByUser(User uploadedBy) {
+        return resourceRepository.findByUploadedBy(uploadedBy);
     }
     
-    /**
-     * Get resources by faculty ID
-     */
-    public List<Resource> getResourcesByFacultyId(Long facultyId) {
-        return resourceRepository.findByFacultyId(facultyId);
+    public List<Resource> getResourcesByUserId(Long userId) {
+        return resourceRepository.findByUploadedById(userId);
     }
     
-    /**
-     * Update resource
-     */
     public Resource updateResource(Long id, String title, String description, MultipartFile file) throws IOException {
         Optional<Resource> optionalResource = resourceRepository.findById(id);
         if (optionalResource.isEmpty()) {
@@ -83,107 +66,61 @@ public class ResourceService {
         Resource resource = optionalResource.get();
         resource.setTitle(title);
         resource.setDescription(description);
+        resource.setLastModified(LocalDateTime.now());
         
         if (file != null && !file.isEmpty()) {
             resource.setFileName(file.getOriginalFilename());
             resource.setFileType(file.getContentType());
+            resource.setFileSize(file.getSize());
             resource.setFileData(file.getBytes());
         }
         
         return resourceRepository.save(resource);
     }
     
-    /**
-     * Delete resource
-     */
     public void deleteResource(Long id) {
         resourceRepository.deleteById(id);
     }
     
-    /**
-     * Search resources by title
-     */
     public List<Resource> searchResourcesByTitle(String title) {
         return resourceRepository.findByTitleContainingIgnoreCase(title);
     }
     
-    /**
-     * Get resources by file type
-     */
     public List<Resource> getResourcesByFileType(String fileType) {
         return resourceRepository.findByFileType(fileType);
     }
     
-    /**
-     * Get resources uploaded after a certain date
-     */
-    public List<Resource> getResourcesUploadedAfter(LocalDateTime date) {
-        return resourceRepository.findByUploadDateAfter(date);
-    }
-    
-    /**
-     * Track resource access (view or download)
-     */
-    public void trackResourceAccess(User student, Resource resource, ViewedResource.AccessType accessType) {
-        // Check if already tracked for this session
-        Optional<ViewedResource> existing = viewedResourceRepository.findByStudentAndResource(student, resource);
+    public void trackResourceAccess(User user, Resource resource) {
+        // Check if already accessed recently (within last hour)
+        Optional<AccessedResource> existing = accessedResourceRepository.findByUserAndResource(user, resource);
         
-        if (existing.isEmpty()) {
-            ViewedResource viewedResource = new ViewedResource(student, resource, accessType);
-            viewedResourceRepository.save(viewedResource);
-        } else {
-            // Update access type and date if different or if it's a new day
-            ViewedResource viewedResource = existing.get();
-            LocalDateTime now = LocalDateTime.now();
-            
-            // If it's a different access type or more than 1 hour has passed, create new record
-            if (!viewedResource.getAccessType().equals(accessType) || 
-                viewedResource.getViewedDate().plusHours(1).isBefore(now)) {
-                ViewedResource newViewedResource = new ViewedResource(student, resource, accessType);
-                viewedResourceRepository.save(newViewedResource);
-            }
+        if (existing.isEmpty() || existing.get().getAccessedAt().isBefore(LocalDateTime.now().minusHours(1))) {
+            AccessedResource accessedResource = new AccessedResource(user, resource);
+            accessedResourceRepository.save(accessedResource);
         }
     }
     
-    /**
-     * Get previously accessed resources by student
-     */
-    public List<Resource> getPreviouslyAccessedResources(User student) {
-        return viewedResourceRepository.findDistinctResourcesByStudent(student);
+    public List<Resource> getRecentlyAccessedResources(User user) {
+        return accessedResourceRepository.findDistinctResourcesByUserOrderByAccessedAtDesc(user);
     }
     
-    /**
-     * Get viewed resources by student
-     */
-    public List<ViewedResource> getViewedResourcesByStudent(User student) {
-        return viewedResourceRepository.findByStudentOrderByViewedDateDesc(student);
+    public List<AccessedResource> getAccessHistory(User user) {
+        return accessedResourceRepository.findByUserOrderByAccessedAtDesc(user);
     }
     
-    /**
-     * Get resource count by faculty
-     */
-    public long getResourceCountByFaculty(User faculty) {
-        return resourceRepository.countByFaculty(faculty);
+    public long getResourceCountByUser(User user) {
+        return resourceRepository.countByUploadedBy(user);
     }
     
-    /**
-     * Get total resource count
-     */
     public long getTotalResourceCount() {
         return resourceRepository.count();
     }
     
-    /**
-     * Check if student has accessed a resource
-     */
-    public boolean hasStudentAccessedResource(User student, Resource resource) {
-        return viewedResourceRepository.existsByStudentAndResource(student, resource);
+    public boolean hasUserAccessedResource(User user, Resource resource) {
+        return accessedResourceRepository.existsByUserAndResource(user, resource);
     }
     
-    /**
-     * Get access count for a resource
-     */
     public long getResourceAccessCount(Resource resource) {
-        return viewedResourceRepository.countByResource(resource);
+        return accessedResourceRepository.countByResource(resource);
     }
 }
