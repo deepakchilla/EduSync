@@ -1,3 +1,0 @@
-# This is a placeholder for a default profile picture
-# In a real implementation, you would place an actual PNG file here
-# For now, the UserController will return a transparent 1x1 pixel PNG as fallback
