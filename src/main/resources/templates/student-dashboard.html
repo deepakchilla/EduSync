@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - EduSync</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary-color: #6366f1;
+            --accent-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: #f1f5f9;
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e2e8f0' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-10px) rotate(1deg); }
+            66% { transform: translateY(5px) rotate(-1deg); }
+        }
+
+        /* Modern Navbar */
+        .modern-navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: none;
+            box-shadow: var(--shadow-sm);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .nav-link {
+            color: var(--dark-color) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            min-height: calc(100vh - 100px);
+            margin: 2rem auto;
+            border-radius: 24px;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Header Section */
+        .header-section {
+            padding: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            animation: slideInDown 0.8s ease-out;
+        }
+
+        .welcome-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            font-weight: 400;
+            animation: slideInUp 0.8s ease-out 0.2s both;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-color);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Search Section */
+        .search-section {
+            padding: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            color: var(--dark-color);
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Resources Section */
+        .resources-section {
+            padding: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+        }
+
+        .section-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Resource Cards */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .resource-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            transition: all 0.4s ease;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .resource-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .resource-type-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: var(--success-color);
+            color: white;
+        }
+
+        .resource-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .resource-description {
+            color: #64748b;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .resource-meta {
+            padding: 1rem 1.5rem;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .resource-actions {
+            padding: 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary-custom {
+            background: #f1f5f9;
+            color: var(--dark-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary-custom:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        .btn-success-custom {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Loading States */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .modern-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-icon {
+            width: 120px;
+            height: 120px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 3rem;
+            color: #94a3b8;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-description {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        /* Modal Enhancements */
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .modal-header {
+            background: rgba(59, 130, 246, 0.05);
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 20px 20px 0 0;
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        /* Alerts */
+        .alert {
+            border: none;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            animation: slideInDown 0.4s ease-out;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #166534;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 1rem;
+                border-radius: 16px;
+            }
+            
+            .welcome-title {
+                font-size: 2rem;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .resource-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-buttons {
+                justify-content: flex-start;
+            }
+            
+            .resource-actions {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                flex: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-section,
+            .search-section,
+            .resources-section {
+                padding: 1.5rem;
+            }
+            
+            .welcome-title {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <nav class="navbar modern-navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-graduation-cap me-2"></i>EduSync
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="main-container">
+            <!-- Header Section -->
+            <div class="header-section">
+                <h1 class="welcome-title" id="welcomeTitle">Student Dashboard</h1>
+                <p class="welcome-subtitle">Explore and access educational resources shared by faculty members</p>
+                
+                <!-- Stats Cards -->
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-number" id="totalResourcesCount">0</div>
+                        <div class="stat-label">Total Resources</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="stat-number" id="accessedResourcesCount">0</div>
+                        <div class="stat-label">Accessed Resources</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="stat-number" id="downloadedResourcesCount">0</div>
+                        <div class="stat-label">Downloads</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <div class="search-container">
+                    <div class="position-relative">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" id="searchInput" placeholder="Search for educational resources...">
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="showAllResources()" id="allBtn">
+                            <i class="fas fa-th-large me-2"></i>All Resources
+                        </button>
+                        <button class="filter-btn" onclick="showPreviouslyAccessed()" id="accessedBtn">
+                            <i class="fas fa-history me-2"></i>Previously Accessed
+                        </button>
+                        <button class="filter-btn" onclick="filterByType('pdf')" id="pdfBtn">
+                            <i class="fas fa-file-pdf me-2"></i>PDF Files
+                        </button>
+                        <button class="filter-btn" onclick="filterByType('image')" id="imageBtn">
+                            <i class="fas fa-image me-2"></i>Images
+                        </button>
+                        <button class="filter-btn" onclick="filterByType('video')" id="videoBtn">
+                            <i class="fas fa-video me-2"></i>Videos
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+
+            <!-- Resources Section -->
+            <div class="resources-section">
+                <div class="section-header">
+                    <h2 class="section-title" id="resourcesTitle">All Educational Resources</h2>
+                    <span class="section-badge" id="resourceCount">0 resources</span>
+                </div>
+                
+                <div id="loadingSpinner" class="loading-container" style="display: none;">
+                    <div class="modern-spinner"></div>
+                    <div class="loading-text">Loading resources...</div>
+                </div>
+                
+                <div id="resourcesList" class="resource-grid">
+                    <!-- Resources will be loaded here -->
+                </div>
+                
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <h3 class="empty-title">No resources found</h3>
+                    <p class="empty-description">We couldn't find any resources matching your criteria. Try adjusting your search or filters.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resource View Modal -->
+    <div class="modal fade" id="resourceModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resourceModalTitle">Resource Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Description:</strong> <span id="resourceDescription"></span></p>
+                    <p><strong>File:</strong> <span id="resourceFileName"></span></p>
+                    <p><strong>Type:</strong> <span id="resourceFileType"></span></p>
+                    <p><strong>Uploaded by:</strong> <span id="resourceFaculty"></span></p>
+                    <p><strong>Upload Date:</strong> <span id="resourceUploadDate"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="viewResource()">View in Browser</button>
+                    <button type="button" class="btn btn-success" onclick="downloadResource()">Download</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentUser = null;
+        let currentResourceId = null;
+
+        // Check if user is logged in and is a student
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/session', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (!data.success || data.user.role !== 'STUDENT') {
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                currentUser = data.user;
+                document.getElementById('welcomeTitle').textContent = `Welcome, ${currentUser.name}`;
+                loadAllResources();
+            } catch (error) {
+                window.location.href = '/login';
+            }
+        }
+
+        // Load all resources
+        async function loadAllResources() {
+            showLoading(true);
+            try {
+                const response = await fetch('/api/resources', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResources(data.resources, 'All Educational Resources');
+                } else {
+                    showAlert('Error loading resources: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Failed to load resources', 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Load previously accessed resources
+        async function showPreviouslyAccessed() {
+            showLoading(true);
+            try {
+                const response = await fetch('/api/resources/accessed', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResources(data.resources, 'Previously Accessed Resources');
+                } else {
+                    showAlert('Error loading accessed resources: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Failed to load accessed resources', 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Search resources
+        async function searchResources() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) {
+                loadAllResources();
+                return;
+            }
+
+            showLoading(true);
+            try {
+                const response = await fetch(`/api/resources/search?query=${encodeURIComponent(query)}`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResources(data.resources, `Search Results for "${query}"`);
+                } else {
+                    showAlert('Search failed: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Search failed', 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Display resources in the UI
+        function displayResources(resources, title) {
+            document.getElementById('resourcesTitle').textContent = title;
+            document.getElementById('resourceCount').textContent = `${resources.length} resources`;
+            updateFilterButtons(title);
+            
+            const container = document.getElementById('resourcesList');
+            const emptyState = document.getElementById('emptyState');
+
+            if (resources.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            
+            const resourcesHtml = resources.map((resource, index) => {
+                const fileIcon = getFileIcon(resource.fileType);
+                const fileTypeClass = getFileTypeClass(resource.fileType);
+                
+                return `
+                    <div class="resource-card" style="animation-delay: ${index * 0.1}s">
+                        <div class="resource-header">
+                            <div class="resource-type-badge ${fileTypeClass}">
+                                <i class="${fileIcon} me-1"></i>${getFileTypeLabel(resource.fileType)}
+                            </div>
+                            <h3 class="resource-title">${escapeHtml(resource.title)}</h3>
+                            <p class="resource-description">${escapeHtml(resource.description)}</p>
+                        </div>
+                        
+                        <div class="resource-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-user"></i>
+                                <span>${escapeHtml(resource.facultyName)}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>${formatDate(resource.uploadDate)}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-file"></i>
+                                <span>${escapeHtml(resource.fileName)}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="resource-actions">
+                            <button class="action-btn btn-primary-custom" onclick="showResourceDetails(${resource.id}, '${escapeHtml(resource.title)}', '${escapeHtml(resource.description)}', '${escapeHtml(resource.fileName)}', '${escapeHtml(resource.fileType)}', '${escapeHtml(resource.facultyName)}', '${resource.uploadDate}')">
+                                <i class="fas fa-info-circle"></i>Details
+                            </button>
+                            <button class="action-btn btn-secondary-custom" onclick="viewResourceDirect(${resource.id})">
+                                <i class="fas fa-eye"></i>View
+                            </button>
+                            <button class="action-btn btn-success-custom" onclick="downloadResourceDirect(${resource.id})">
+                                <i class="fas fa-download"></i>Download
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = resourcesHtml;
+            updateStats();
+        }
+
+        // Get file icon based on file type
+        function getFileIcon(fileType) {
+            if (fileType.includes('pdf')) return 'fas fa-file-pdf';
+            if (fileType.includes('image')) return 'fas fa-file-image';
+            if (fileType.includes('video')) return 'fas fa-file-video';
+            if (fileType.includes('audio')) return 'fas fa-file-audio';
+            if (fileType.includes('word') || fileType.includes('document')) return 'fas fa-file-word';
+            if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'fas fa-file-excel';
+            if (fileType.includes('powerpoint') || fileType.includes('presentation')) return 'fas fa-file-powerpoint';
+            if (fileType.includes('text')) return 'fas fa-file-alt';
+            return 'fas fa-file';
+        }
+
+        // Get file type class for styling
+        function getFileTypeClass(fileType) {
+            if (fileType.includes('pdf')) return 'pdf-badge';
+            if (fileType.includes('image')) return 'image-badge';
+            if (fileType.includes('video')) return 'video-badge';
+            return '';
+        }
+
+        // Get file type label
+        function getFileTypeLabel(fileType) {
+            if (fileType.includes('pdf')) return 'PDF';
+            if (fileType.includes('image')) return 'Image';
+            if (fileType.includes('video')) return 'Video';
+            if (fileType.includes('audio')) return 'Audio';
+            if (fileType.includes('word')) return 'Word';
+            if (fileType.includes('excel')) return 'Excel';
+            if (fileType.includes('powerpoint')) return 'PPT';
+            return 'File';
+        }
+
+        // Update filter button states
+        function updateFilterButtons(currentFilter) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if (currentFilter.includes('All')) {
+                document.getElementById('allBtn').classList.add('active');
+            } else if (currentFilter.includes('Previously')) {
+                document.getElementById('accessedBtn').classList.add('active');
+            } else if (currentFilter.includes('PDF')) {
+                document.getElementById('pdfBtn').classList.add('active');
+            } else if (currentFilter.includes('Image')) {
+                document.getElementById('imageBtn').classList.add('active');
+            } else if (currentFilter.includes('Video')) {
+                document.getElementById('videoBtn').classList.add('active');
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            // This will be updated when we fetch actual data
+        }
+
+        // Show resource details in modal
+        function showResourceDetails(id, title, description, fileName, fileType, facultyName, uploadDate) {
+            currentResourceId = id;
+            document.getElementById('resourceModalTitle').textContent = title;
+            document.getElementById('resourceDescription').textContent = description;
+            document.getElementById('resourceFileName').textContent = fileName;
+            document.getElementById('resourceFileType').textContent = fileType;
+            document.getElementById('resourceFaculty').textContent = facultyName;
+            document.getElementById('resourceUploadDate').textContent = formatDate(uploadDate);
+            
+            new bootstrap.Modal(document.getElementById('resourceModal')).show();
+        }
+
+        // View resource from modal
+        function viewResource() {
+            if (currentResourceId) {
+                viewResourceDirect(currentResourceId);
+            }
+        }
+
+        // Download resource from modal
+        function downloadResource() {
+            if (currentResourceId) {
+                downloadResourceDirect(currentResourceId);
+            }
+        }
+
+        // View resource directly
+        function viewResourceDirect(resourceId) {
+            window.open(`/api/resources/${resourceId}/file?action=view`, '_blank');
+        }
+
+        // Download resource directly
+        function downloadResourceDirect(resourceId) {
+            window.open(`/api/resources/${resourceId}/file?action=download`, '_blank');
+        }
+
+        // Show all resources
+        function showAllResources() {
+            document.getElementById('searchInput').value = '';
+            loadAllResources();
+        }
+
+        // Filter resources by file type
+        async function filterByType(type) {
+            showLoading(true);
+            try {
+                const response = await fetch('/api/resources', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    let filteredResources = data.resources;
+                    let filterTitle = '';
+                    
+                    switch(type) {
+                        case 'pdf':
+                            filteredResources = data.resources.filter(r => r.fileType.includes('pdf'));
+                            filterTitle = 'PDF Resources';
+                            break;
+                        case 'image':
+                            filteredResources = data.resources.filter(r => r.fileType.includes('image'));
+                            filterTitle = 'Image Resources';
+                            break;
+                        case 'video':
+                            filteredResources = data.resources.filter(r => r.fileType.includes('video'));
+                            filterTitle = 'Video Resources';
+                            break;
+                    }
+                    
+                    displayResources(filteredResources, filterTitle);
+                } else {
+                    showAlert('Error loading resources: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Failed to load resources', 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Show loading spinner
+        function showLoading(show) {
+            document.getElementById('loadingSpinner').style.display = show ? 'block' : 'none';
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.getElementById('alertContainer').innerHTML = alertHtml;
+        }
+
+        // Logout function
+        async function logout() {
+            try {
+                await fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/login';
+            } catch (error) {
+                window.location.href = '/login';
+            }
+        }
+
+        // Utility functions
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        // Allow search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchResources();
+            }
+        });
+
+        // Initialize dashboard
+        checkAuth();
+    </script>
+</body>
+</html>
