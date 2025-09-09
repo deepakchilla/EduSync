@@ -9,10 +9,13 @@ The application now includes AI-powered summarization using Cohere's API. When u
 ## Features
 
 - **Automatic Summary Generation**: Summaries are generated automatically when viewing resources
+- **File Content Extraction**: Extracts actual text content from uploaded files (PDFs, Word docs, etc.)
 - **Multiple Summary Types**: Support for quick, standard, and detailed summaries
 - **Real-time Generation**: Summaries are generated on-demand using Cohere's latest models
+- **Educational Focus**: Summaries are tailored for educational content with key concepts and learning objectives
 - **Error Handling**: Comprehensive error handling with user-friendly messages
 - **Security**: API calls are made from the backend to keep API keys secure
+- **Fallback Support**: Falls back to metadata if file content extraction fails
 
 ## Setup Instructions
 
@@ -55,7 +58,9 @@ The backend includes the following new components:
 
 - **SummaryController**: REST endpoints for summary generation
 - **SummaryService**: Service layer for Cohere API integration
+- **FileContentExtractionService**: Service for extracting text from uploaded files
 - **Configuration**: Properties for API key and base URL
+- **Dependencies**: Apache Tika, PDFBox, and Apache POI for file parsing
 
 ### 4. Frontend Setup
 
@@ -83,6 +88,11 @@ Content-Type: application/json
 POST /api/summary/resource/{resourceId}
 ```
 
+### Test Content Extraction
+```
+POST /api/summary/test-extraction/{resourceId}
+```
+
 ### Health Check
 ```
 GET /api/summary/health
@@ -93,9 +103,11 @@ GET /api/summary/health
 ### In ResourceViewer
 
 1. Navigate to any resource in the application
-2. The AI summary section will automatically attempt to generate a summary
-3. If generation fails, you can click "Regenerate" to try again
-4. The summary will appear below the resource viewer
+2. The system will automatically extract content from the uploaded file
+3. The AI summary section will generate a summary based on the actual file content
+4. If file extraction fails, it will fall back to using the title and description
+5. If generation fails, you can click "Regenerate" to try again
+6. The summary will appear below the resource viewer with educational insights
 
 ### Programmatic Usage
 
@@ -111,6 +123,18 @@ const summary = await summaryApi.generateSummary({
 // Generate a summary for a resource
 const resourceSummary = await summaryApi.generateResourceSummary(resourceId);
 ```
+
+## Supported File Types
+
+The system can extract text content from the following file types:
+
+- **PDF Documents**: `.pdf`
+- **Microsoft Word**: `.doc`, `.docx`
+- **Microsoft Excel**: `.xls`, `.xlsx`
+- **Microsoft PowerPoint**: `.ppt`, `.pptx`
+- **Rich Text Format**: `.rtf`
+- **Plain Text**: `.txt`
+- **Other text-based formats** supported by Apache Tika
 
 ## Configuration Options
 

@@ -149,7 +149,7 @@ export default function ResourceViewer() {
         setAiSummary(response.summary);
         toast({
           title: "Summary Generated",
-          description: "AI summary has been generated successfully using Cohere API.",
+          description: "AI has analyzed the file content and generated an educational summary.",
         });
       } else {
         throw new Error('No summary received from the API');
@@ -733,9 +733,10 @@ export default function ResourceViewer() {
                   </Button>
                 </div>
               ) : isGeneratingSummary ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary mr-3" />
-                  <span className="text-lg text-muted-foreground">AI is analyzing the content...</span>
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+                  <span className="text-lg text-muted-foreground mb-2">Extracting content from file...</span>
+                  <span className="text-sm text-muted-foreground">AI is analyzing the material...</span>
                 </div>
               ) : aiSummary ? (
                 <div className="max-w-none">

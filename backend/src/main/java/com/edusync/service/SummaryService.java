@@ -10,6 +10,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -20,11 +22,17 @@ public class SummaryService {
     @Autowired
     private ResourceRepository resourceRepository;
 
+    @Autowired
+    private FileContentExtractionService fileContentExtractionService;
+
     @Value("${cohere.api.key:}")
     private String cohereApiKey;
 
     @Value("${cohere.api.base-url:https://api.cohere.ai/v1}")
     private String cohereApiBaseUrl;
+
+    @Value("${file.upload-dir:uploads}")
+    private String uploadDir;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -50,7 +58,7 @@ public class SummaryService {
     }
 
     /**
-     * Generate summary for a specific resource
+     * Generate summary for a specific resource by extracting actual file content
      */
     public String generateResourceSummary(Long resourceId) throws Exception {
         Optional<Resource> resourceOpt = resourceRepository.findById(resourceId);
@@ -60,16 +68,89 @@ public class SummaryService {
 
         Resource resource = resourceOpt.get();
         
-        // For now, we'll use the title and description as the text to summarize
-        // In a real implementation, you might want to extract text from the actual file
-        String textToSummarize = resource.getTitle() + "\n\n" + 
-                                (resource.getDescription() != null ? resource.getDescription() : "");
-        
-        if (textToSummarize.trim().isEmpty()) {
-            throw new Exception("No content available to summarize for this resource");
+        try {
+            // Try to extract content from the actual file
+            String fileContent = extractFileContent(resource);
+            
+            if (fileContent != null && !fileContent.trim().isEmpty()) {
+                // Use the extracted file content for summarization
+                return generateSummary(fileContent);
+            } else {
+                // Fallback to title and description if file content extraction fails
+                String fallbackText = createFallbackText(resource);
+                return generateSummary(fallbackText);
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error extracting file content for resource " + resourceId + ": " + e.getMessage());
+            
+            // Fallback to title and description
+            String fallbackText = createFallbackText(resource);
+            return generateSummary(fallbackText);
         }
+    }
 
-        return generateSummary(textToSummarize);
+    /**
+     * Extract content from the actual uploaded file
+     */
+    private String extractFileContent(Resource resource) throws Exception {
+        try {
+            // Construct the file path
+            Path filePath = Paths.get(uploadDir, "resources", resource.getFileName());
+            
+            System.out.println("Attempting to extract content from file: " + filePath.toString());
+            
+            // Check if file exists
+            if (!filePath.toFile().exists()) {
+                throw new Exception("File not found: " + filePath.toString());
+            }
+            
+            // Check if file type is supported
+            if (!fileContentExtractionService.isSupportedFileType(filePath.toString())) {
+                throw new Exception("File type not supported for text extraction: " + resource.getFileType());
+            }
+            
+            // Extract text content
+            String extractedText = fileContentExtractionService.extractTextWithFallback(filePath.toString());
+            
+            if (extractedText == null || extractedText.trim().isEmpty()) {
+                throw new Exception("No text content could be extracted from the file");
+            }
+            
+            System.out.println("Successfully extracted " + extractedText.length() + " characters from file");
+            return extractedText;
+            
+        } catch (Exception e) {
+            System.err.println("Failed to extract file content: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * Create fallback text from title and description
+     */
+    private String createFallbackText(Resource resource) {
+        StringBuilder fallbackText = new StringBuilder();
+        
+        // Add title
+        if (resource.getTitle() != null && !resource.getTitle().trim().isEmpty()) {
+            fallbackText.append("Title: ").append(resource.getTitle()).append("\n\n");
+        }
+        
+        // Add description
+        if (resource.getDescription() != null && !resource.getDescription().trim().isEmpty()) {
+            fallbackText.append("Description: ").append(resource.getDescription()).append("\n\n");
+        }
+        
+        // Add file type information
+        if (resource.getFileType() != null) {
+            fallbackText.append("File Type: ").append(resource.getFileType()).append("\n\n");
+        }
+        
+        // Add a note that this is based on metadata only
+        fallbackText.append("Note: This summary is based on the resource metadata only, as the file content could not be extracted.");
+        
+        return fallbackText.toString();
     }
 
     /**
@@ -77,6 +158,19 @@ public class SummaryService {
      */
     public boolean isCohereConfigured() {
         return cohereApiKey != null && !cohereApiKey.trim().isEmpty();
+    }
+
+    /**
+     * Test method to extract file content without generating summary
+     */
+    public String testFileContentExtraction(Long resourceId) throws Exception {
+        Optional<Resource> resourceOpt = resourceRepository.findById(resourceId);
+        if (!resourceOpt.isPresent()) {
+            throw new Exception("Resource not found with ID: " + resourceId);
+        }
+
+        Resource resource = resourceOpt.get();
+        return extractFileContent(resource);
     }
 
     /**
@@ -94,9 +188,15 @@ public class SummaryService {
                 ? text.substring(0, maxInputLength) + "..." 
                 : text;
 
-            String prompt = "Please provide a comprehensive summary of the following educational material. " +
-                           "Focus on key concepts, main points, and important details that would help students " +
-                           "understand the content:\n\n" + truncatedText + "\n\nSummary:";
+            String prompt = "Please provide a comprehensive educational summary of the following material. " +
+                           "Focus on:\n" +
+                           "1. Key concepts and definitions\n" +
+                           "2. Main topics and themes\n" +
+                           "3. Important examples and applications\n" +
+                           "4. Learning objectives and takeaways\n" +
+                           "5. Practical insights for students\n\n" +
+                           "Make the summary educational and informative, helping students understand what they will learn from this material:\n\n" + 
+                           truncatedText + "\n\nEducational Summary:";
 
             // Prepare request body
             Map<String, Object> requestBody = new HashMap<>();

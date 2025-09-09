@@ -101,4 +101,25 @@ public class SummaryController {
             );
         }
     }
+
+    @PostMapping("/test-extraction/{resourceId}")
+    public ResponseEntity<ApiResponse> testContentExtraction(@PathVariable Long resourceId) {
+        try {
+            // This endpoint is for testing file content extraction
+            String extractedContent = summaryService.testFileContentExtraction(resourceId);
+            
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("resourceId", resourceId);
+            responseData.put("extractedContent", extractedContent);
+            responseData.put("contentLength", extractedContent.length());
+            
+            return ResponseEntity.ok(
+                new ApiResponse(true, "Content extraction test successful", responseData)
+            );
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                new ApiResponse(false, "Content extraction test failed: " + e.getMessage(), null)
+            );
+        }
+    }
 }
