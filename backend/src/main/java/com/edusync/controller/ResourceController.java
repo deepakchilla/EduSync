@@ -2,8 +2,10 @@ package com.edusync.controller;
 
 import com.edusync.dto.ApiResponse;
 import com.edusync.entity.User;
+import com.edusync.entity.Resource;
 import com.edusync.service.FileStorageService;
 import com.edusync.service.UserService;
+import com.edusync.service.ResourceService;
 import com.edusync.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +36,9 @@ public class ResourceController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ResourceService resourceService;
 
     @GetMapping("/health")
     public ResponseEntity<ApiResponse> healthCheck() {
@@ -388,11 +393,27 @@ public class ResourceController {
         }
     }
 
-    @GetMapping
-    public List<Resource> getResources(@RequestParam(required = false) String branch) {
-        if (branch != null && !branch.equalsIgnoreCase("All")) {
-            return resourceService.getResourcesByBranch(branch);
+    @GetMapping("/filter")
+    public ResponseEntity<ApiResponse> getResources(@RequestParam(required = false) String branch) {
+        try {
+            List<Resource> resources;
+            if (branch != null && !branch.equalsIgnoreCase("All")) {
+                resources = resourceService.getResourcesByBranch(branch);
+            } else {
+                resources = resourceService.getAllResources();
+            }
+            
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("resources", resources);
+            responseData.put("count", resources.size());
+            
+            return ResponseEntity.ok(
+                new ApiResponse(true, "Resources retrieved successfully", responseData)
+            );
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                new ApiResponse(false, "Failed to retrieve resources", null)
+            );
         }
-        return resourceService.getAllResources();
     }
 }
