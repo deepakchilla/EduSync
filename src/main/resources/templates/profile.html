@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - EduSync</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <h1 class="text-xl font-semibold text-gray-900">EduSync</h1>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <a th:href="${user.role == 'faculty'} ? '/home' : '/student-home'" class="text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Profile Header -->
+        <div class="bg-white rounded-xl shadow-sm border p-8 mb-8">
+            <div class="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
+                <!-- Profile Picture -->
+                <div class="relative">
+                    <div class="w-24 h-24 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                        <img th:if="${user.profilePicture != null}" 
+                             th:src="@{'/profile-picture/' + ${user.id}}"
+                             class="w-full h-full object-cover"
+                             th:alt="${user.name}"/>
+                        <div th:unless="${user.profilePicture != null}" 
+                             class="w-full h-full bg-indigo-100 flex items-center justify-center">
+                            <span class="text-indigo-600 font-bold text-2xl" th:text="${user.name.substring(0,1)}"></span>
+                        </div>
+                    </div>
+                    <button class="absolute bottom-0 right-0 w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white hover:bg-indigo-700 transition-colors"
+                            onclick="document.getElementById('profilePicInput').click()">
+                        <i class="fas fa-camera text-xs"></i>
+                    </button>
+                    <input type="file" id="profilePicInput" accept="image/*" class="hidden" onchange="uploadProfilePic(this)">
+                </div>
+                
+                <!-- User Info -->
+                <div class="flex-1">
+                    <h1 class="text-2xl font-bold text-gray-900 mb-2" th:text="${user.name}"></h1>
+                    <div class="flex items-center space-x-4 mb-4">
+                        <span class="px-3 py-1 rounded-full text-sm font-medium"
+                              th:classappend="${user.role == 'faculty'} ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'"
+                              th:text="${user.role}">
+                        </span>
+                        <span class="text-gray-600" th:text="${user.email}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl p-6 border">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600" th:text="${user.role == 'faculty'} ? 'Uploaded Resources' : 'Available Resources'"></p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${resources != null ? resources.size() : '0'}">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-file-alt text-indigo-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 border">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Downloads</p>
+                        <p class="text-2xl font-bold text-gray-900">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-download text-green-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 border">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Account Status</p>
+                        <p class="text-2xl font-bold text-green-600">Active</p>
+                    </div>
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-check-circle text-purple-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Settings -->
+        <div class="bg-white rounded-xl shadow-sm border p-8 mb-8">
+            <h2 class="text-lg font-semibold text-gray-900 mb-6">Account Settings</h2>
+            <form th:action="@{/update-profile}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <input type="text" id="name" name="name" th:value="${user.name}" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <input type="email" id="email" name="email" th:value="${user.email}" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                </div>
+                
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-save mr-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Recent Resources (Faculty only) -->
+        <div th:if="${user.role == 'faculty' && resources != null && !resources.isEmpty()}" class="bg-white rounded-xl shadow-sm border p-8">
+            <h2 class="text-lg font-semibold text-gray-900 mb-6">Your Recent Resources</h2>
+            <div class="space-y-4">
+                <div th:each="resource : ${resources}" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center"
+                             th:classappend="${resource.fileType.contains('pdf')} ? 'bg-red-100' : 
+                                            ${resource.fileType.contains('word')} ? 'bg-blue-100' : 
+                                            ${resource.fileType.contains('excel')} ? 'bg-green-100' : 
+                                            ${resource.fileType.contains('powerpoint')} ? 'bg-orange-100' : 
+                                            ${resource.fileType.startsWith('image')} ? 'bg-purple-100' : 
+                                            ${resource.fileType.startsWith('video')} ? 'bg-pink-100' : 'bg-gray-100'">
+                            <i th:class="${resource.fileType.contains('pdf')} ? 'fas fa-file-pdf text-red-600' : 
+                                         ${resource.fileType.contains('word')} ? 'fas fa-file-word text-blue-600' : 
+                                         ${resource.fileType.contains('excel')} ? 'fas fa-file-excel text-green-600' : 
+                                         ${resource.fileType.contains('powerpoint')} ? 'fas fa-file-powerpoint text-orange-600' : 
+                                         ${resource.fileType.startsWith('image')} ? 'fas fa-file-image text-purple-600' : 
+                                         ${resource.fileType.startsWith('video')} ? 'fas fa-file-video text-pink-600' : 'fas fa-file text-gray-600'"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900" th:text="${resource.title}"></p>
+                            <p class="text-sm text-gray-500" th:text="${#numbers.formatDecimal(resource.fileSize / 1024.0, 1, 2)} + ' KB'"></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <a th:href="@{/edit/{id}(id=${resource.id})}" class="text-indigo-600 hover:text-indigo-700">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a th:href="@{/download/{id}(id=${resource.id})}" class="text-gray-600 hover:text-gray-700">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-full transition-transform duration-300">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toast-message">Profile updated successfully!</span>
+        </div>
+    </div>
+
+    <script>
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 ${
+                type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+            }`;
+            
+            // Show toast
+            toast.style.transform = 'translateY(0)';
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                toast.style.transform = 'translateY(100%)';
+            }, 3000);
+        }
+
+        function uploadProfilePic(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                
+                if (!file.type.startsWith('image/')) {
+                    showToast('Please select an image file', 'error');
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('File size should be less than 5MB', 'error');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('profilePicture', file);
+                formData.append('name', document.getElementById('name').value);
+                formData.append('email', document.getElementById('email').value);
+
+                fetch('/update-profile', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showToast(data.message || 'Profile picture updated successfully', 'success');
+                    
+                    // Update profile picture preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const profilePics = document.querySelectorAll('.w-24.h-24 img, .w-8.h-8 img');
+                        profilePics.forEach(pic => pic.src = e.target.result);
+                    }
+                    reader.readAsDataURL(file);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Failed to update profile picture', 'error');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

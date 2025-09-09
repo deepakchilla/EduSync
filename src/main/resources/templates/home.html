@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - EduSync</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <h1 class="text-xl font-semibold text-gray-900">EduSync</h1>
+                </div>
+                
+                <!-- Search -->
+                <div class="flex-1 max-w-lg mx-8">
+                    <form th:action="@{/search}" method="get" class="relative">
+                        <input type="text" name="query" th:value="${param.query}"
+                               placeholder="Search resources..." 
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        <button type="submit" class="absolute right-2 top-1 bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700">
+                            Search
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- User Menu -->
+                <div class="flex items-center space-x-4">
+                    <a th:href="@{/profile}" class="flex items-center space-x-3 hover:bg-gray-50 rounded-lg px-3 py-2 transition-colors">
+                        <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                            <img th:if="${user.profilePicture != null}" 
+                                 th:src="@{'/profile-picture/' + ${user.id}}"
+                                 class="w-8 h-8 rounded-full object-cover"
+                                 th:alt="${user.name}"/>
+                            <span th:if="${user.profilePicture == null}" 
+                                  class="text-indigo-600 font-medium text-sm"
+                                  th:text="${user.name.substring(0,1)}">
+                            </span>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-sm font-medium text-gray-900" th:text="${user.name}"></div>
+                            <div class="text-xs text-gray-500 capitalize" th:text="${user.role}"></div>
+                        </div>
+                    </a>
+                    <a th:href="@{/logout}" class="text-gray-500 hover:text-gray-700 px-3 py-2">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">
+                Welcome back, <span th:text="${user.name}"></span>!
+            </h1>
+            <p class="text-gray-600" th:if="${user.role == 'faculty'}">
+                Manage and share your educational resources with students.
+            </p>
+            <p class="text-gray-600" th:unless="${user.role == 'faculty'}">
+                Access learning materials shared by your instructors.
+            </p>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
+            <div class="flex items-center space-x-4">
+                <h2 class="text-lg font-semibold text-gray-900">Resources</h2>
+                <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-sm" th:text="${resources.size()} + ' items'"></span>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <a th:if="${user.role == 'faculty'}" th:href="@{/upload}" 
+                   class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Upload Resource
+                </a>
+            </div>
+        </div>
+
+        <!-- Resources Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" th:if="${!resources.isEmpty()}">
+            <div th:each="resource : ${resources}" class="bg-white rounded-xl p-6 card-hover transition-all duration-200 border">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 rounded-lg flex items-center justify-center"
+                         th:classappend="${resource.fileType.contains('pdf')} ? 'bg-red-100' : 
+                                        ${resource.fileType.contains('word')} ? 'bg-blue-100' : 
+                                        ${resource.fileType.contains('excel')} ? 'bg-green-100' : 
+                                        ${resource.fileType.contains('powerpoint')} ? 'bg-orange-100' : 
+                                        ${resource.fileType.startsWith('image')} ? 'bg-purple-100' : 
+                                        ${resource.fileType.startsWith('video')} ? 'bg-pink-100' : 'bg-gray-100'">
+                        <i th:class="${resource.fileType.contains('pdf')} ? 'fas fa-file-pdf text-red-600' : 
+                                     ${resource.fileType.contains('word')} ? 'fas fa-file-word text-blue-600' : 
+                                     ${resource.fileType.contains('excel')} ? 'fas fa-file-excel text-green-600' : 
+                                     ${resource.fileType.contains('powerpoint')} ? 'fas fa-file-powerpoint text-orange-600' : 
+                                     ${resource.fileType.startsWith('image')} ? 'fas fa-file-image text-purple-600' : 
+                                     ${resource.fileType.startsWith('video')} ? 'fas fa-file-video text-pink-600' : 'fas fa-file text-gray-600'"></i>
+                    </div>
+                    <span class="text-xs px-2 py-1 rounded-full"
+                          th:classappend="${resource.fileType.contains('pdf')} ? 'bg-red-100 text-red-600' : 
+                                         ${resource.fileType.contains('word')} ? 'bg-blue-100 text-blue-600' : 
+                                         ${resource.fileType.contains('excel')} ? 'bg-green-100 text-green-600' : 
+                                         ${resource.fileType.contains('powerpoint')} ? 'bg-orange-100 text-orange-600' : 
+                                         ${resource.fileType.startsWith('image')} ? 'bg-purple-100 text-purple-600' : 
+                                         ${resource.fileType.startsWith('video')} ? 'bg-pink-100 text-pink-600' : 'bg-gray-100 text-gray-600'"
+                          th:text="${resource.fileType}">
+                    </span>
+                </div>
+                
+                <h3 class="font-semibold text-gray-900 mb-2" th:text="${resource.title}"></h3>
+                <p class="text-gray-600 text-sm mb-4 line-clamp-2" th:text="${resource.description}"></p>
+                
+                <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <span th:text="${resource.uploader.name}"></span>
+                    <span th:text="${#numbers.formatDecimal(resource.fileSize / 1024.0, 1, 2)} + ' KB'"></span>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <a th:href="@{/download/{id}(id=${resource.id})}" 
+                       class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-download mr-2"></i>Download
+                    </a>
+                    
+                    <div th:if="${user.role == 'faculty'}" class="flex space-x-2">
+                        <a th:href="@{/edit/{id}(id=${resource.id})}" 
+                           class="text-gray-500 hover:text-indigo-600 p-2">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a th:href="@{/delete/{id}(id=${resource.id})}" 
+                           class="text-gray-500 hover:text-red-600 p-2"
+                           onclick="return confirm('Are you sure you want to delete this resource?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${resources.isEmpty()}" class="text-center py-12">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-folder-open text-gray-400 text-3xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No resources found</h3>
+            <p class="text-gray-600 mb-6">
+                <span th:if="${user.role == 'faculty'}">Start by uploading your first educational resource.</span>
+                <span th:unless="${user.role == 'faculty'}">Check back later for new learning materials.</span>
+            </p>
+            <a th:if="${user.role == 'faculty'}" th:href="@{/upload}" 
+               class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>Upload First Resource
+            </a>
+        </div>
+    </main>
+</body>
+</html>

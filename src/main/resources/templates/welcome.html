@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSync - Educational Resource Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <h1 class="text-xl font-semibold text-gray-900">EduSync</h1>
+                </div>
+                
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-indigo-600 font-medium">Home</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900">Resources</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900">About</a>
+                </nav>
+                
+                <div class="flex items-center space-x-3">
+                    <a href="/login" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                        Sign In
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">
+                Share Knowledge,<br>Empower Learning
+            </h1>
+            <p class="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
+                A simple platform for educators to share resources and students to access learning materials.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/login" class="bg-white text-indigo-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                    Get Started
+                </a>
+                <a href="#resources" class="border border-white text-white px-6 py-3 rounded-lg font-medium hover:bg-white hover:text-indigo-600 transition-colors">
+                    Browse Resources
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="py-12 bg-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-3xl font-bold text-indigo-600">1,200+</div>
+                    <div class="text-gray-600 text-sm">Resources</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-indigo-600">80+</div>
+                    <div class="text-gray-600 text-sm">Faculty</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-indigo-600">4,000+</div>
+                    <div class="text-gray-600 text-sm">Students</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-indigo-600">24/7</div>
+                    <div class="text-gray-600 text-sm">Access</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Preview -->
+    <section id="resources" class="py-16 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Recent Resources</h2>
+                <p class="text-gray-600">Explore the latest educational materials shared by our faculty</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Sample Resource Cards -->
+                <div class="bg-white rounded-xl p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-file-pdf text-red-600"></i>
+                        </div>
+                        <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">PDF</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Introduction to Algorithms</h3>
+                    <p class="text-gray-600 text-sm mb-4">Comprehensive guide to fundamental algorithms and data structures.</p>
+                    <div class="flex items-center justify-between text-sm text-gray-500">
+                        <span>Prof. Wilson</span>
+                        <a href="/login" class="text-indigo-600 hover:text-indigo-700">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-file-word text-blue-600"></i>
+                        </div>
+                        <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">DOCX</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Calculus Study Notes</h3>
+                    <p class="text-gray-600 text-sm mb-4">Detailed notes on differential and integral calculus concepts.</p>
+                    <div class="flex items-center justify-between text-sm text-gray-500">
+                        <span>Dr. Johnson</span>
+                        <a href="/login" class="text-indigo-600 hover:text-indigo-700">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-file-powerpoint text-orange-600"></i>
+                        </div>
+                        <span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full">PPTX</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Database Systems</h3>
+                    <p class="text-gray-600 text-sm mb-4">Presentation covering relational database design principles.</p>
+                    <div class="flex items-center justify-between text-sm text-gray-500">
+                        <span>Prof. Chen</span>
+                        <a href="/login" class="text-indigo-600 hover:text-indigo-700">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="/login" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                    View All Resources
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-16 bg-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Simple & Effective</h2>
+                <p class="text-gray-600">Everything you need for educational resource management</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-upload text-indigo-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Easy Upload</h3>
+                    <p class="text-gray-600 text-sm">Faculty can quickly upload and organize learning materials</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-search text-indigo-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Smart Search</h3>
+                    <p class="text-gray-600 text-sm">Students can easily find resources by course or topic</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-mobile-alt text-indigo-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Mobile Ready</h3>
+                    <p class="text-gray-600 text-sm">Access resources anywhere, anytime on any device</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white text-sm"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold">EduSync</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">
+                        Simplifying educational resource management for modern institutions.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Platform</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">Resources</a></li>
+                        <li><a href="#" class="hover:text-white">Courses</a></li>
+                        <li><a href="#" class="hover:text-white">Faculty</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+                <p>&copy; 2023 EduSync. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

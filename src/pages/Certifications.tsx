@@ -84,15 +84,25 @@ const Certifications: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-6">
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 min-h-screen">
       {/* Page header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-semibold tracking-tight">Certifications</h1>
-        <p className="text-muted-foreground mt-1">Upload and manage your course and internship certifications.</p>
+      <div className="bg-white border border-gray-200 rounded-md mb-8">
+        <div className="px-6 py-5 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Certifications</h1>
+            <p className="text-gray-600">Upload and manage your course and internship certifications.</p>
+          </div>
+          <div className="hidden sm:flex items-center gap-2">
+            <span className="text-xs text-gray-500">Certifications</span>
+            <span className="px-3 py-1 text-sm rounded-full border border-gray-300 text-gray-700 bg-gray-50">
+              {filtered.length}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <Tabs value={active} onValueChange={(v) => setActive(v as CertType)}>
           <TabsList>
             <TabsTrigger value="COURSE">Courses</TabsTrigger>
@@ -119,7 +129,7 @@ const Certifications: React.FC = () => {
 
       {/* Upload panel (inline, not a card) */}
       {showUpload && (
-        <div className="mt-4 rounded-xl border bg-background/50 p-4">
+        <div className="mt-4 rounded-md border bg-background/50 p-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} />
             <Input type="file" accept="application/pdf,image/*" onChange={e => setFile(e.target.files?.[0] || null)} />
@@ -144,7 +154,7 @@ const Certifications: React.FC = () => {
       <Separator className="my-2" />
 
       {/* Items list - modern rows, no cards */}
-      <div className="divide-y rounded-xl border">
+      <div className="divide-y rounded-md border">
         {filtered.map((it: any) => (
           <div key={it.id} className="group flex items-start justify-between gap-4 px-4 py-3 transition-colors hover:bg-muted/40">
             <div className="min-w-0">
