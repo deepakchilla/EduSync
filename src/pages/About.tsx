@@ -3,6 +3,12 @@ import { Footer } from "@/components/Layout/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Chilaka from "../assets/Chilaka.jpg";
+import Rafi from "../assets/Rafi.jpg";
+import Pranav from "../assets/Pranav.jpg";
+import Abhiram from "../assets/Abhiram.jpg";
+import Aravind from "../assets/Aravind.jpg";
+import Deepak from "../assets/Deepak.jpg";
 import { 
   Users, 
   BookOpen, 
@@ -504,13 +510,13 @@ export default function About() {
             <div className="text-center">
               <div className="w-32 h-32 rounded-full mx-auto mb-6 overflow-hidden border-4 border-slate-600">
                 <img 
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" 
+                  src={Deepak} width={200}
                   alt="Alex Smith"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-2xl font-semibold mb-2">Alex Smith</h3>
-              <p className="text-slate-300 mb-4">Full-Stack Developer & Lead Architect</p>
+              <h3 className="text-2xl font-semibold mb-2">Deepak Chilla</h3>
+              <p className="text-slate-300 mb-4">Full-Stack Developer & Team Lead</p>
               <p className="text-slate-400 text-sm mb-4">
                 Responsible for overall system design, backend development, 
                 database architecture, and deployment strategies.
@@ -525,12 +531,12 @@ export default function About() {
             <div className="text-center">
               <div className="w-32 h-32 rounded-full mx-auto mb-6 overflow-hidden border-4 border-slate-600">
                 <img 
-                  src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face" 
-                  alt="Sarah Chen"
+                  src={Chilaka} width={200} 
+                  alt="Deepak"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-2xl font-semibold mb-2">Sarah Chen</h3>
+              <h3 className="text-2xl font-semibold mb-2">Madhur Chilaka</h3>
               <p className="text-slate-300 mb-4">Frontend Specialist & UI/UX Expert</p>
               <p className="text-slate-400 text-sm mb-4">
                 Focused on creating intuitive user interfaces, responsive design, 
@@ -546,13 +552,13 @@ export default function About() {
             <div className="text-center">
               <div className="w-32 h-32 rounded-full mx-auto mb-6 overflow-hidden border-4 border-slate-600">
                 <img 
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" 
+                  src={Abhiram} width={100} 
                   alt="Michael Rodriguez"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover" 
                 />
               </div>
-              <h3 className="text-2xl font-semibold mb-2">Michael Rodriguez</h3>
-              <p className="text-slate-300 mb-4">Backend Engineer & Database Specialist</p>
+              <h3 className="text-2xl font-semibold mb-2">Abhiram Chettupalli</h3>
+              <p className="text-slate-300 mb-4"></p>
               <p className="text-slate-400 text-sm mb-4">
                 Specialized in RESTful API development, database optimization, 
                 security implementation, and server-side logic.
@@ -567,12 +573,12 @@ export default function About() {
             <div className="text-center">
               <div className="w-32 h-32 rounded-full mx-auto mb-6 overflow-hidden border-4 border-slate-600">
                 <img 
-                  src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face" 
+                  src={Rafi} width={200} 
                   alt="David Kim"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-2xl font-semibold mb-2">David Kim</h3>
+              <h3 className="text-2xl font-semibold mb-2">Dudekula Rafi</h3>
               <p className="text-slate-300 mb-4">DevOps Engineer & System Administrator</p>
               <p className="text-slate-400 text-sm mb-4">
                 Specialized in deployment automation, server management, 
@@ -588,12 +594,12 @@ export default function About() {
             <div className="text-center">
               <div className="w-32 h-32 rounded-full mx-auto mb-6 overflow-hidden border-4 border-slate-600">
                 <img 
-                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" 
+                  src={Pranav} width={200}
                   alt="Emma Johnson"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-2xl font-semibold mb-2">Emma Johnson</h3>
+              <h3 className="text-2xl font-semibold mb-2">Pranav Doppalapudi</h3>
               <p className="text-slate-300 mb-4">Quality Assurance & Testing Specialist</p>
               <p className="text-slate-400 text-sm mb-4">
                 Focused on ensuring code quality, comprehensive testing, 
@@ -614,7 +620,7 @@ export default function About() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-2xl font-semibold mb-2">James Wilson</h3>
+              <h3 className="text-2xl font-semibold mb-2">Annavarapu Aravind</h3>
               <p className="text-slate-300 mb-4">Project Manager & Technical Lead</p>
               <p className="text-slate-400 text-sm mb-4">
                 Responsible for project coordination, timeline management, 

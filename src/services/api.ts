@@ -145,7 +145,7 @@ async function apiRequest<T>(
 export const authApi = {
   // Login
   login: async (credentials: LoginRequest): Promise<ApiResponse<LoginResponse>> => {
-    return apiRequest('/auth/login', {
+    return apiRequest('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
@@ -153,7 +153,7 @@ export const authApi = {
 
   // Register
   register: async (userData: RegisterRequest): Promise<ApiResponse<{ user: User }>> => {
-    return apiRequest('/auth/register', {
+    return apiRequest('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
@@ -161,19 +161,19 @@ export const authApi = {
 
   // Logout
   logout: async (): Promise<ApiResponse> => {
-    return apiRequest('/auth/logout', {
+    return apiRequest('/api/auth/logout', {
       method: 'POST',
     });
   },
 
   // Get current session
   getSession: async (): Promise<ApiResponse<{ user: User }>> => {
-    return apiRequest('/auth/session');
+    return apiRequest('/api/auth/session');
   },
 
   // Forgot password
   forgotPassword: async (email: string): Promise<ApiResponse> => {
-    return apiRequest('/auth/forgot-password', {
+    return apiRequest('/api/auth/forgot-password', {
       method: 'POST',
       body: JSON.stringify({ email }),
     });
@@ -181,7 +181,7 @@ export const authApi = {
 
   // Reset password (simplified - no tokens needed)
   resetPassword: async (email: string, newPassword: string): Promise<ApiResponse> => {
-    return apiRequest('/auth/reset-password', {
+    return apiRequest('/api/auth/reset-password', {
       method: 'POST',
       body: JSON.stringify({ email, newPassword }),
     });
@@ -192,12 +192,12 @@ export const authApi = {
 export const userApi = {
   // Get user profile
   getProfile: async (userEmail: string): Promise<ApiResponse<User>> => {
-    return apiRequest(`/user/profile?userEmail=${encodeURIComponent(userEmail)}`);
+    return apiRequest(`/api/user/profile?userEmail=${encodeURIComponent(userEmail)}`);
   },
 
   // Update user profile
   updateProfile: async (userEmail: string, userData: Partial<User>): Promise<ApiResponse<User>> => {
-    return apiRequest('/user/profile/update', {
+    return apiRequest('/api/user/profile/update', {
       method: 'POST',
       body: JSON.stringify({
         userEmail: userEmail,
@@ -212,7 +212,7 @@ export const userApi = {
     formData.append('file', file);
     formData.append('userEmail', userEmail);
 
-    return apiRequest('/user/profile-picture', {
+    return apiRequest('/api/user/profile-picture', {
       method: 'POST',
       headers: {}, // Let browser set content-type for FormData
       body: formData,
@@ -221,7 +221,7 @@ export const userApi = {
 
   // Get profile picture URL
   getProfilePictureUrl: (userId: number): string => {
-    return `${API_BASE_URL}/users/${userId}/profile-pic`;
+    return `${API_BASE_URL}/api/users/${userId}/profile-pic`;
   },
 
   // Remove profile picture
@@ -229,7 +229,7 @@ export const userApi = {
     const formData = new URLSearchParams();
     formData.append('userEmail', userEmail);
     
-    return apiRequest('/user/profile-picture', {
+    return apiRequest('/api/user/profile-picture', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -243,22 +243,22 @@ export const userApi = {
 export const resourcesApi = {
   // Get all resources
   getAll: async (query: string = ''): Promise<ApiResponse<Resource[]>> => {
-    return apiRequest(`/resources/list${query}`);
+    return apiRequest(`/api/resources/list${query}`);
   },
 
   // Get faculty resources
   getFacultyResources: async (): Promise<ApiResponse<Resource[]>> => {
-    return apiRequest('/resources/faculty');
+    return apiRequest('/api/resources/faculty');
   },
 
   // Get student accessed resources
   getStudentResources: async (): Promise<ApiResponse<Resource[]>> => {
-    return apiRequest('/resources/accessed');
+    return apiRequest('/api/resources/accessed');
   },
 
   // Get my resources (for faculty)
   getMyResources: async (userEmail: string): Promise<ApiResponse<Resource[]>> => {
-    const response = await apiRequest<{resources: Resource[], count: number}>(`/resources/my-resources?userEmail=${encodeURIComponent(userEmail)}`);
+    const response = await apiRequest<{resources: Resource[], count: number}>(`/api/resources/my-resources?userEmail=${encodeURIComponent(userEmail)}`);
     
     // Handle the nested response structure from backend
     if (response.success && response.data && response.data.resources) {
@@ -277,12 +277,12 @@ export const resourcesApi = {
 
   // Search resources
   search: async (query: string): Promise<ApiResponse<Resource[]>> => {
-    return apiRequest(`/resources/search?query=${encodeURIComponent(query)}`);
+    return apiRequest(`/api/resources/search?query=${encodeURIComponent(query)}`);
   },
 
   // Upload resource (Faculty only)
   upload: async (resourceData: FormData): Promise<ApiResponse<Resource>> => {
-    return apiRequest('/resources/upload', {
+    return apiRequest('/api/resources/upload', {
       method: 'POST',
       body: resourceData,
     });
@@ -290,7 +290,7 @@ export const resourcesApi = {
 
   // Update resource (Faculty only)
   update: async (id: number, resourceData: Partial<Resource>): Promise<ApiResponse<Resource>> => {
-    return apiRequest(`/resources/${id}`, {
+    return apiRequest(`/api/resources/${id}`, {
       method: 'PUT',
       body: JSON.stringify(resourceData),
     });
@@ -301,7 +301,7 @@ export const resourcesApi = {
     const formData = new URLSearchParams();
     formData.append('userEmail', userEmail);
     
-    return apiRequest(`/resources/${id}`, {
+    return apiRequest(`/api/resources/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -312,7 +312,7 @@ export const resourcesApi = {
 
   // Download resource file
   download: async (id: number): Promise<Blob> => {
-    const response = await fetch(`${API_BASE_URL}/resources/download/${id}`);
+    const response = await fetch(`${API_BASE_URL}/api/resources/download/${id}`);
     
     if (!response.ok) {
       throw new Error(`Download failed: ${response.status}`);
@@ -326,12 +326,12 @@ export const resourcesApi = {
 export const statsApi = {
   // Get dashboard stats
   getDashboardStats: async (): Promise<ApiResponse<Stats>> => {
-    return apiRequest('/stats/dashboard');
+    return apiRequest('/api/stats/dashboard');
   },
 
   // Get specific stats
   getStats: async (type: string): Promise<ApiResponse<any>> => {
-    return apiRequest(`/stats/${type}`);
+    return apiRequest(`/api/stats/${type}`);
   },
 };
 
@@ -356,34 +356,34 @@ export interface Activity {
 
 export const activitiesApi = {
   submit: async (form: FormData): Promise<ApiResponse<Activity>> => {
-    return apiRequest('/activities/submit', {
+    return apiRequest('/api/activities/submit', {
       method: 'POST',
       body: form,
     });
   },
   my: async (userEmail: string): Promise<ApiResponse<Activity[]>> => {
-    const res = await apiRequest<{ activities: Activity[] }>(`/activities/my?userEmail=${encodeURIComponent(userEmail)}`);
+    const res = await apiRequest<{ activities: Activity[] }>(`/api/activities/my?userEmail=${encodeURIComponent(userEmail)}`);
     return {
       ...res,
       data: (res.data as any)?.activities ?? [],
     } as any;
   },
   pending: async (): Promise<ApiResponse<Activity[]>> => {
-    const res = await apiRequest<{ activities: Activity[] }>(`/activities/pending`);
+    const res = await apiRequest<{ activities: Activity[] }>(`/api/activities/pending`);
     return {
       ...res,
       data: (res.data as any)?.activities ?? [],
     } as any;
   },
   approve: async (id: number, facultyEmail: string): Promise<ApiResponse<Activity>> => {
-    return apiRequest(`/activities/${id}/approve`, {
+    return apiRequest(`/api/activities/${id}/approve`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ facultyEmail }).toString(),
     });
   },
   reject: async (id: number, facultyEmail: string, reason: string): Promise<ApiResponse<Activity>> => {
-    return apiRequest(`/activities/${id}/reject`, {
+    return apiRequest(`/api/activities/${id}/reject`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ facultyEmail, reason }).toString(),
@@ -392,34 +392,52 @@ export const activitiesApi = {
 };
 
 // Certifications API
-export interface Certification extends Activity {}
+export interface Certification {
+  id: number;
+  userId: number;
+  title: string;
+  description?: string;
+  type?: string;
+  filePath: string;
+  uploadDate: string;
+}
 
 export const certificationsApi = {
   my: async (userEmail: string): Promise<ApiResponse<Certification[]>> => {
-    const res = await apiRequest<{ certifications: Certification[] }>(`/certifications/my?userEmail=${encodeURIComponent(userEmail)}`);
+    const res = await apiRequest<Certification[]>(`/api/certificates/my?userEmail=${encodeURIComponent(userEmail)}`);
     return {
       ...res,
-      data: (res.data as any)?.certifications ?? [],
-    } as any;
+      data: res.data ?? [],
+    };
   },
   upload: async (form: FormData): Promise<ApiResponse<Certification>> => {
-    return apiRequest('/certifications/upload', {
+    return apiRequest('/api/certificates/upload', {
       method: 'POST',
       body: form,
     });
   },
   delete: async (id: number, userEmail: string): Promise<ApiResponse> => {
     const params = new URLSearchParams({ userEmail });
-    return apiRequest(`/certifications/${id}?${params.toString()}`, {
+    return apiRequest(`/api/certificates/${id}?${params.toString()}`, {
       method: 'DELETE',
     });
+  },
+  download: async (id: number, userEmail: string): Promise<Blob> => {
+    const params = new URLSearchParams({ userEmail });
+    const response = await fetch(`${API_BASE_URL}/api/certificates/download/${id}?${params.toString()}`);
+    
+    if (!response.ok) {
+      throw new Error(`Download failed: ${response.status}`);
+    }
+    
+    return response.blob();
   },
 };
 
 // Portfolio API
 export const portfolioApi = {
   summary: async (userEmail: string): Promise<ApiResponse<any>> => {
-    return apiRequest(`/portfolio/summary?userEmail=${encodeURIComponent(userEmail)}`);
+    return apiRequest(`/api/portfolio/summary?userEmail=${encodeURIComponent(userEmail)}`);
   },
 };
 
@@ -433,7 +451,7 @@ export const apiUtils = {
     if (profilePic.startsWith('/api/user/')) {
       return `${API_BASE_URL}${profilePic}`;
     }
-    return `${API_BASE_URL}/user/${profilePic}/profile-picture`;
+    return `${API_BASE_URL}/api/user/${profilePic}/profile-picture`;
   },
 
   // Handle API errors

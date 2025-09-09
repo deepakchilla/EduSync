@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/portfolio")
+@RequestMapping("/api/portfolio")
 public class PortfolioController {
 
     @Autowired

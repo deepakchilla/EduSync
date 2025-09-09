@@ -1,12 +1,13 @@
 package com.edusync.repository;
 
-import com.edusync.entity.Resource;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.edusync.entity.Resource;
 
 @Repository
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
@@ -20,9 +21,7 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     // Find resources by file type
     List<Resource> findByFileTypeContainingIgnoreCaseOrderByUploadedAtDesc(String fileType);
     
-    // Find by branch and optional subject
-    List<Resource> findByBranchOrderByUploadedAtDesc(String branch);
-    List<Resource> findByBranchAndSubjectOrderByUploadedAtDesc(String branch, String subject);
+    List<Resource> findByBranch(String branch);   // ✅ filter by branch
 
     // Search resources by title or description
     @Query("SELECT r FROM Resource r WHERE " +

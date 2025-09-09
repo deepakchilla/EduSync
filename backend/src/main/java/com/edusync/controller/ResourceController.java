@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/resources")
+@RequestMapping("/api/resources")
 public class ResourceController {
 
     @Autowired
@@ -69,9 +69,7 @@ public class ResourceController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-            @RequestParam("userEmail") String userEmail,
-            @RequestParam("branch") String branch,
-            @RequestParam(value = "subject", required = false) String subject) {
+            @RequestParam("userEmail") String userEmail) {
         
         System.out.println("=== RESOURCE UPLOAD REQUEST ===");
         System.out.println("Title: " + title);
@@ -123,8 +121,6 @@ public class ResourceController {
             resource.setFileType(file.getContentType());
             resource.setUploadedBy(user.getId());
             resource.setUploadedAt(LocalDateTime.now());
-            resource.setBranch((branch == null || branch.trim().isEmpty()) ? "IT" : branch);
-            resource.setSubject(subject);
             
             // Save to database
             com.edusync.entity.Resource savedResource = resourceRepository.save(resource);
@@ -135,8 +131,6 @@ public class ResourceController {
             responseData.put("fileName", storedFileName);
             responseData.put("title", title);
             responseData.put("fileSize", file.getSize());
-            responseData.put("branch", branch);
-            responseData.put("subject", subject);
             
             return ResponseEntity.ok(
                 new ApiResponse(true, "Resource uploaded successfully", responseData)
@@ -165,19 +159,9 @@ public class ResourceController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ApiResponse> getAllResources(
-        @RequestParam(value = "branch", required = false) String branch,
-        @RequestParam(value = "subject", required = false) String subject
-    ) {
+    public ResponseEntity<ApiResponse> getAllResources() {
         try {
-            List<com.edusync.entity.Resource> resources;
-            if (branch != null && !branch.isEmpty() && subject != null && !subject.isEmpty()) {
-                resources = resourceRepository.findByBranchAndSubjectOrderByUploadedAtDesc(branch, subject);
-            } else if (branch != null && !branch.isEmpty()) {
-                resources = resourceRepository.findByBranchOrderByUploadedAtDesc(branch);
-            } else {
-                resources = resourceRepository.findAllByOrderByUploadedAtDesc();
-            }
+            List<com.edusync.entity.Resource> resources = resourceRepository.findAllByOrderByUploadedAtDesc();
             
             // Convert to DTOs with proper structure
             List<Map<String, Object>> resourceDtos = resources.stream()
@@ -191,8 +175,6 @@ public class ResourceController {
                     dto.put("fileType", resource.getFileType());
                     dto.put("uploadedBy", resource.getUploadedBy());
                     dto.put("uploadedAt", resource.getUploadedAt());
-                    dto.put("branch", resource.getBranch());
-                    dto.put("subject", resource.getSubject());
                     return dto;
                 })
                 .collect(java.util.stream.Collectors.toList());
@@ -404,5 +386,13 @@ public class ResourceController {
                 new ApiResponse(false, "Failed to delete resource", null)
             );
         }
+    }
+
+    @GetMapping
+    public List<Resource> getResources(@RequestParam(required = false) String branch) {
+        if (branch != null && !branch.equalsIgnoreCase("All")) {
+            return resourceService.getResourcesByBranch(branch);
+        }
+        return resourceService.getAllResources();
     }
 }

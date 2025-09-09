@@ -1,11 +1,16 @@
 package com.edusync.entity;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "resources")
@@ -45,13 +50,11 @@ public class Resource {
     @Column(name = "upload_date", updatable = false)
     private LocalDateTime uploadedAt;
 
-    @Size(max = 50)
-    @Column(name = "branch", length = 50)
-    private String branch = "IT"; // default to IT if not provided
-
-    @Size(max = 100)
-    @Column(name = "subject", length = 100)
-    private String subject; // e.g., DBMS, OS, DSA for CSE
+    // ✅ New Branch field
+    @NotBlank(message = "Branch is required")
+    @Size(max = 100, message = "Branch must be less than 100 characters")
+    @Column(nullable = false)
+    private String branch;
     
     // Default constructor
     public Resource() {
@@ -133,9 +136,10 @@ public class Resource {
     public void setUploadedAt(LocalDateTime uploadedAt) {
         this.uploadedAt = uploadedAt;
     }
-
-    public String getBranch() { return branch; }
-    public void setBranch(String branch) { this.branch = branch; }
-    public String getSubject() { return subject; }
-    public void setSubject(String subject) { this.subject = subject; }
+    public String getBranch() {
+        return branch;
+    }
+    public void setBranch(String branch) {
+        this.branch = branch;
+    }
 }

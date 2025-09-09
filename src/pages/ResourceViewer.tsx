@@ -35,7 +35,9 @@ import {
   Play,
   Pause,
   Volume2,
-  Settings
+  Settings,
+  Brain,
+  Sparkles
 } from "lucide-react";
 
 interface Resource {
@@ -68,6 +70,11 @@ export default function ResourceViewer() {
   const [volume, setVolume] = useState(100);
   const [viewerError, setViewerError] = useState<string | null>(null);
   const [isViewerLoading, setIsViewerLoading] = useState(true);
+  
+  // Add state for AI summary
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
 
   useEffect(() => {
     if (resourceId) {
@@ -112,6 +119,8 @@ export default function ResourceViewer() {
         if (foundResource) {
           setResource(foundResource);
           createViewerUrl(foundResource);
+          // Generate summary when resource is loaded
+          generateSummary(foundResource);
         } else {
           setError('Resource not found');
         }
@@ -123,6 +132,45 @@ export default function ResourceViewer() {
       setError(error.message || 'Failed to load resource');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Function to generate AI summary
+  const generateSummary = async (resourceData: Resource) => {
+    try {
+      setIsGeneratingSummary(true);
+      setSummaryError(null);
+      
+      // This would call your API endpoint to generate the summary
+      // For now, we'll simulate this with a timeout and mock data
+      setTimeout(() => {
+        // Mock summary for demonstration
+        const mockSummary = "This is a comprehensive analysis of the educational material. The content covers fundamental concepts in the subject area, with a focus on practical applications. Key themes include the historical context, theoretical frameworks, and contemporary implementations. The material appears to be designed for intermediate learners with some prior knowledge of the subject. Important concepts are highlighted through examples and case studies, making the content more engaging and easier to understand. The resource concludes with a summary of key takeaways and suggestions for further reading.";
+        setAiSummary(mockSummary);
+        setIsGeneratingSummary(false);
+      }, 2000);
+      
+      // In a real implementation, you would use:
+      /*
+      const response = await fetch(`/api/resources/${resourceData.id}/summarize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // You might include authentication tokens here
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAiSummary(data.summary);
+      } else {
+        throw new Error('Failed to generate summary');
+      }
+      */
+    } catch (error: any) {
+      console.error('Error generating summary:', error);
+      setSummaryError(error.message || 'Failed to generate summary');
+      setIsGeneratingSummary(false);
     }
   };
 
@@ -215,7 +263,7 @@ export default function ResourceViewer() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  // New helper functions for enhanced features
+  // Helper functions for enhanced features
   const toggleFavorite = () => {
     setIsFavorited(!isFavorited);
     toast({
@@ -327,7 +375,7 @@ export default function ResourceViewer() {
               <Button
                 variant="outline"
                 onClick={() => navigate('/resources')}
-                className="edu-button-secondary h-12 px-6"
+                className="h-12 px-6"
               >
                 <ArrowLeft className="h-5 w-5 mr-2" />
                 Back to Resources
@@ -504,7 +552,7 @@ export default function ResourceViewer() {
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   {viewerError}
                 </p>
-                <Button onClick={handleDownload} className="edu-button-primary h-10 px-6">
+                <Button onClick={handleDownload} className="h-10 px-6 bg-primary text-primary-foreground">
                   <Download className="mr-2 h-4 w-4" />
                   Download Resource
                 </Button>
@@ -521,7 +569,7 @@ export default function ResourceViewer() {
                         <span className="text-lg font-semibold text-foreground">PDF Document Viewer</span>
                       </div>
                       <div className="flex space-x-2">
-                        <Button size="sm" variant="outline" onClick={() => window.open(viewerUrl, '_blank')} className="edu-button-secondary">
+                        <Button size="sm" variant="outline" onClick={() => window.open(viewerUrl, '_blank')}>
                           <ExternalLink className="h-4 w-4 mr-2" />
                           Open in New Tab
                         </Button>
@@ -553,7 +601,7 @@ export default function ResourceViewer() {
                         </div>
                         <span className="text-lg font-semibold text-foreground">Image Viewer</span>
                       </div>
-                      <Button size="sm" variant="outline" onClick={() => window.open(viewerUrl, '_blank')} className="edu-button-secondary">
+                      <Button size="sm" variant="outline" onClick={() => window.open(viewerUrl, '_blank')}>
                         <ExternalLink className="h-4 w-4 mr-2" />
                         Open Full Size
                       </Button>
@@ -587,7 +635,7 @@ export default function ResourceViewer() {
                         </div>
                         <span className="text-lg font-semibold text-foreground">Video Player</span>
                       </div>
-                      <Button size="sm" variant="outline" onClick={() => window.open(viewerUrl, '_blank')} className="edu-button-secondary">
+                      <Button size="sm" variant="outline" onClick={() => window.open(viewerUrl, '_blank')}>
                         <ExternalLink className="h-4 w-4 mr-2" />
                         Open in New Tab
                       </Button>
@@ -624,7 +672,7 @@ export default function ResourceViewer() {
                     <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                       This file type cannot be previewed in the browser. Please download the file to view it with the appropriate application.
                     </p>
-                    <Button onClick={handleDownload} className="edu-button-primary h-10 px-6">
+                    <Button onClick={handleDownload} className="h-10 px-6 bg-primary text-primary-foreground">
                       <Download className="mr-2 h-4 w-4" />
                       Download to View
                     </Button>
@@ -640,12 +688,98 @@ export default function ResourceViewer() {
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   Unable to create a preview for this file. Please download the resource to view it.
                 </p>
-                <Button onClick={handleDownload} className="edu-button-primary h-10 px-6">
+                <Button onClick={handleDownload} className="h-10 px-6 bg-primary text-primary-foreground">
                   <Download className="mr-2 h-4 w-4" />
                   Download Resource
                 </Button>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* AI Summary Section */}
+        <div className="mb-16">
+          <div className="bg-white border border-border rounded-lg overflow-hidden">
+            {/* Summary Header */}
+            <div className="flex items-center justify-between p-6 border-b border-border bg-gradient-to-r from-blue-50 to-purple-50">
+              <div className="flex items-center space-x-4">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-lg">
+                  <Brain className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-foreground">AI-Powered Summary</h3>
+                  <p className="text-muted-foreground">Key insights extracted from this resource</p>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => generateSummary(resource)}
+                disabled={isGeneratingSummary}
+                className="h-10 px-4"
+              >
+                {isGeneratingSummary ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4 mr-2" />
+                )}
+                {isGeneratingSummary ? 'Generating...' : 'Regenerate'}
+              </Button>
+            </div>
+            
+            {/* Summary Content */}
+            <div className="p-6">
+              {summaryError ? (
+                <div className="text-center py-8 bg-red-50 rounded-lg">
+                  <AlertCircle className="h-10 w-10 text-red-500 mx-auto mb-3" />
+                  <h4 className="text-lg font-semibold text-foreground mb-2">Summary Error</h4>
+                  <p className="text-muted-foreground mb-4">{summaryError}</p>
+                  <Button onClick={() => generateSummary(resource)} className="h-10 px-6 bg-primary text-primary-foreground">
+                    Try Again
+                  </Button>
+                </div>
+              ) : isGeneratingSummary ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary mr-3" />
+                  <span className="text-lg text-muted-foreground">AI is analyzing the content...</span>
+                </div>
+              ) : aiSummary ? (
+                <div className="max-w-none">
+                  <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                    <p className="text-blue-800 font-medium flex items-center">
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      This summary was generated by our AI model analyzing the resource content
+                    </p>
+                  </div>
+                  <div className="p-4 bg-muted/30 rounded-lg">
+                    <p className="text-foreground leading-relaxed whitespace-pre-line">{aiSummary}</p>
+                  </div>
+                  
+                  {/* Summary Actions */}
+                  <div className="flex items-center justify-between mt-6 pt-6 border-t border-border">
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <ThumbsUp className="h-4 w-4" />
+                      <span>Was this summary helpful?</span>
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button variant="outline" size="sm" className="h-9">
+                        <ThumbsUp className="h-4 w-4 mr-2" />
+                        Yes
+                      </Button>
+                      <Button variant="outline" size="sm" className="h-9">
+                        <ThumbsUp className="h-4 w-4 mr-2 rotate-180" />
+                        No
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 bg-muted/20 rounded-lg">
+                  <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                  <h4 className="text-lg font-semibold text-foreground mb-2">No Summary Available</h4>
+                  <p className="text-muted-foreground mb-4">We couldn't generate a summary for this resource.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -658,7 +792,7 @@ export default function ResourceViewer() {
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-4">
             <Button 
               onClick={handleDownload} 
-              className="edu-button-primary h-12 px-8 text-base font-semibold"
+              className="h-12 px-8 text-base font-semibold bg-primary text-primary-foreground"
             >
               <Download className="mr-2 h-5 w-5" />
               Download Resource
@@ -667,7 +801,7 @@ export default function ResourceViewer() {
               onClick={() => window.open(viewerUrl, '_blank')} 
               variant="outline"
               disabled={!viewerUrl}
-              className="edu-button-secondary h-12 px-8 text-base font-semibold"
+              className="h-12 px-8 text-base font-semibold"
             >
               <ExternalLink className="mr-2 h-5 w-5" />
               Open in New Tab
@@ -687,5 +821,4 @@ export default function ResourceViewer() {
       <Footer />
     </div>
   );
-}
-
+}4

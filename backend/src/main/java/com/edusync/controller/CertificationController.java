@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/certifications")
+@RequestMapping("/api/certifications")
 public class CertificationController {
 
     @Autowired

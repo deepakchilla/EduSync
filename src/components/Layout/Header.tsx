@@ -51,7 +51,7 @@ export function Header({ isAuthenticated = false, userRole, userName, user }: He
   // Add dashboard link for authenticated users
   const authenticatedNavigation = [
     { name: 'Dashboard', href: displayRole === 'FACULTY' ? '/faculty-dashboard' : '/dashboard', icon: BookOpen },
-    { name: 'Certifications', href: '/certifications', icon: Award },
+    ...(displayRole !== 'FACULTY' ? [{ name: 'Certifications', href: '/certifications', icon: Award }] : []),
     { name: 'Resources', href: '/resources', icon: BookOpen },
     { name: 'About', href: '/about', icon: Users },
   ];
