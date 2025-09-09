@@ -73,12 +73,22 @@ public class SummaryService {
             String fileContent = extractFileContent(resource);
             
             if (fileContent != null && !fileContent.trim().isEmpty()) {
-                // Use the extracted file content for summarization
-                return generateSummary(fileContent);
+                // Check if Cohere API is configured
+                if (isCohereConfigured()) {
+                    // Use the extracted file content for AI summarization
+                    return generateSummary(fileContent);
+                } else {
+                    // If no API key, return a basic summary of the extracted content
+                    return createBasicSummaryFromContent(fileContent, resource);
+                }
             } else {
                 // Fallback to title and description if file content extraction fails
                 String fallbackText = createFallbackText(resource);
-                return generateSummary(fallbackText);
+                if (isCohereConfigured()) {
+                    return generateSummary(fallbackText);
+                } else {
+                    return createBasicSummaryFromContent(fallbackText, resource);
+                }
             }
             
         } catch (Exception e) {
@@ -86,7 +96,11 @@ public class SummaryService {
             
             // Fallback to title and description
             String fallbackText = createFallbackText(resource);
-            return generateSummary(fallbackText);
+            if (isCohereConfigured()) {
+                return generateSummary(fallbackText);
+            } else {
+                return createBasicSummaryFromContent(fallbackText, resource);
+            }
         }
     }
 
@@ -151,6 +165,40 @@ public class SummaryService {
         fallbackText.append("Note: This summary is based on the resource metadata only, as the file content could not be extracted.");
         
         return fallbackText.toString();
+    }
+
+    /**
+     * Create a basic summary from extracted content when Cohere API is not available
+     */
+    private String createBasicSummaryFromContent(String content, Resource resource) {
+        StringBuilder summary = new StringBuilder();
+        
+        summary.append("📚 **Content Summary**\n\n");
+        
+        // Add resource info
+        if (resource.getTitle() != null) {
+            summary.append("**Title:** ").append(resource.getTitle()).append("\n\n");
+        }
+        
+        // Extract first few sentences as a basic summary
+        String[] sentences = content.split("[.!?]+");
+        int maxSentences = Math.min(3, sentences.length);
+        
+        summary.append("**Key Content:**\n");
+        for (int i = 0; i < maxSentences; i++) {
+            String sentence = sentences[i].trim();
+            if (!sentence.isEmpty() && sentence.length() > 10) {
+                summary.append("• ").append(sentence).append(".\n");
+            }
+        }
+        
+        summary.append("\n**File Information:**\n");
+        summary.append("• File Type: ").append(resource.getFileType() != null ? resource.getFileType() : "Unknown").append("\n");
+        summary.append("• Content Length: ").append(content.length()).append(" characters\n");
+        
+        summary.append("\n*Note: This is a basic summary. For AI-powered analysis, please configure the Cohere API key.*");
+        
+        return summary.toString();
     }
 
     /**
