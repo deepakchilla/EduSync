@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/Layout/Header";
 import { Footer } from "@/components/Layout/Footer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Send, MessageSquare, User, BookOpen } from "lucide-react";
+import { chatApi } from "@/services/api";
 
 interface Thread {
   id: number;
@@ -27,10 +28,8 @@ interface ChatMessage {
 export default function Chat() {
   const { isAuthenticated, user } = useAuth();
   const [isLoading] = useState(false);
-  const [threads] = useState<Thread[]>([
-    { id: 1, facultyName: "Dr. Rao", subject: "DSA", lastMessage: "Please revise trees", lastAt: "2025-09-01 10:05" },
-    { id: 2, facultyName: "Prof. Meera", subject: "DBMS", lastMessage: "Good job on ERD", lastAt: "2025-09-03 14:20" },
-  ]);
+  const [threads, setThreads] = useState<Thread[]>([]);
+  const [threadId, setThreadId] = useState<number | null>(null);
   const [activeId, setActiveId] = useState<number>(1);
   const [messages, setMessages] = useState<Record<number, ChatMessage[]>>({
     1: [
@@ -48,17 +47,67 @@ export default function Chat() {
   const currentThread = threads.find(t => t.id === activeId);
   const currentMessages = messages[activeId] ?? [];
 
-  const handleSend = () => {
-    if (!draft.trim()) return;
-    const next: ChatMessage = {
-      id: (currentMessages.at(-1)?.id ?? 0) + 1,
-      sender: "student",
-      content: draft.trim(),
-      at: new Date().toLocaleTimeString(),
-    };
-    setMessages({ ...messages, [activeId]: [...currentMessages, next] });
-    setDraft("");
+  const handleSend = async () => {
+    if (!draft.trim() || !threadId || !user?.id) return;
+    try {
+      await chatApi.sendMessage(threadId, user.id as any, 'STUDENT', draft.trim());
+      const next: ChatMessage = {
+        id: (currentMessages.at(-1)?.id ?? 0) + 1,
+        sender: "student",
+        content: draft.trim(),
+        at: new Date().toLocaleTimeString(),
+      };
+      setMessages({ ...messages, [activeId]: [...currentMessages, next] });
+      setDraft("");
+    } catch (_e) {
+      // Fallback to local append to avoid breaking UI
+      const next: ChatMessage = {
+        id: (currentMessages.at(-1)?.id ?? 0) + 1,
+        sender: "student",
+        content: draft.trim(),
+        at: new Date().toLocaleTimeString(),
+      };
+      setMessages({ ...messages, [activeId]: [...currentMessages, next] });
+      setDraft("");
+    }
   };
+
+  useEffect(() => {
+    // Load faculty from backend; expect only Vijaya K
+    (async () => {
+      try {
+        const res = await chatApi.listFaculty();
+        const faculty = (res.data ?? []).map((f: any) => ({ id: f.id, name: `${f.firstName} ${f.lastName}` }));
+        const vijaya = faculty[0] ?? { id: 1, name: 'Vijaya K' };
+        // Initialize single thread with the faculty
+        const initial: Thread = { id: 1, facultyName: vijaya.name, subject: 'General', lastMessage: 'Say hello to start', lastAt: new Date().toLocaleString() };
+        setThreads([initial]);
+        setActiveId(1);
+        // create backend thread for real delivery
+        if (user?.id && vijaya.id) {
+          try {
+            const created = await chatApi.createThread(user.id as any, vijaya.id, 'General');
+            if (created?.data?.id) {
+              setThreadId(created.data.id);
+              const msgs = await chatApi.listMessages(created.data.id);
+              const list: ChatMessage[] = (msgs.data ?? []).map((m: any) => ({
+                id: m.id,
+                sender: (m.senderRole || 'STUDENT').toLowerCase(),
+                content: m.content,
+                at: new Date(m.createdAt || Date.now()).toLocaleTimeString(),
+              }));
+              setMessages(prev => ({ ...prev, 1: list }));
+            }
+          } catch { /* ignore, keep static */ }
+        }
+      } catch (_e) {
+        // Fallback to static Vijaya K
+        const initial: Thread = { id: 1, facultyName: 'Vijaya K', subject: 'General', lastMessage: 'Say hello to start', lastAt: new Date().toLocaleString() };
+        setThreads([initial]);
+        setActiveId(1);
+      }
+    })();
+  }, []);
 
   if (isLoading) {
     return (

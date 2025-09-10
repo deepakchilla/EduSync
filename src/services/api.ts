@@ -434,6 +434,33 @@ export const certificationsApi = {
   },
 };
 
+// Chat API (basic REST wiring)
+export interface ChatThreadDto { id: number; studentId: number; facultyId: number; subject?: string; lastMessageAt?: string }
+export interface ChatMessageDto { id: number; threadId: number; senderId: number; senderRole: string; content: string; createdAt: string }
+
+export const chatApi = {
+  listFaculty: async (): Promise<ApiResponse<any[]>> => {
+    return apiRequest('/api/chat/faculty');
+  },
+  createThread: async (studentId: number, facultyId: number, subject?: string): Promise<ApiResponse<ChatThreadDto>> => {
+    const params = new URLSearchParams();
+    params.set('studentId', String(studentId));
+    params.set('facultyId', String(facultyId));
+    if (subject) params.set('subject', subject);
+    return apiRequest(`/api/chat/threads?${params.toString()}`, { method: 'POST' });
+  },
+  listMessages: async (threadId: number): Promise<ApiResponse<ChatMessageDto[]>> => {
+    return apiRequest(`/api/chat/threads/${threadId}/messages`);
+  },
+  sendMessage: async (threadId: number, senderId: number, senderRole: 'STUDENT'|'FACULTY', content: string): Promise<ApiResponse<any>> => {
+    const params = new URLSearchParams();
+    params.set('senderId', String(senderId));
+    params.set('senderRole', senderRole);
+    params.set('content', content);
+    return apiRequest(`/api/chat/threads/${threadId}/messages?${params.toString()}`, { method: 'POST' });
+  }
+};
+
 // Portfolio API
 export const portfolioApi = {
   summary: async (userEmail: string): Promise<ApiResponse<any>> => {

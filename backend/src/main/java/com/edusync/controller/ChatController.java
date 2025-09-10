@@ -6,6 +6,8 @@ import com.edusync.entity.ChatThread;
 import com.edusync.repository.ChatMessageRepository;
 import com.edusync.repository.ChatThreadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.edusync.repository.UserRepository;
+import com.edusync.entity.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,8 @@ public class ChatController {
 
     @Autowired
     private ChatMessageRepository chatMessageRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/threads")
     public ResponseEntity<ApiResponse> createThread(@RequestParam Long studentId,
@@ -35,6 +39,12 @@ public class ChatController {
         t.setLastMessageAt(LocalDateTime.now());
         ChatThread saved = chatThreadRepository.save(t);
         return ResponseEntity.ok(new ApiResponse(true, "Thread created", saved));
+    }
+
+    @GetMapping("/faculty")
+    public ResponseEntity<ApiResponse> listFaculty() {
+        var list = userRepository.findByRole(User.UserRole.FACULTY);
+        return ResponseEntity.ok(new ApiResponse(true, "Faculty", list));
     }
 
     @GetMapping("/threads/student/{studentId}")
