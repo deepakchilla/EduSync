@@ -73,41 +73,37 @@ export default function Chat() {
   };
 
   useEffect(() => {
-    // Load faculty from backend; expect only Vijaya K
     (async () => {
       try {
-        const res = await chatApi.listFaculty();
-        const faculty = (res.data ?? []).map((f: any) => ({ id: f.id, name: `${f.firstName} ${f.lastName}` }));
-        const vijaya = faculty[0] ?? { id: 1, name: 'Vijaya K' };
-        // Initialize single thread with the faculty
-        const initial: Thread = { id: 1, facultyName: vijaya.name, subject: 'General', lastMessage: 'Say hello to start', lastAt: new Date().toLocaleString() };
-        setThreads([initial]);
-        setActiveId(1);
-        // create backend thread for real delivery
-        if (user?.id && vijaya.id) {
-          try {
-            const created = await chatApi.createThread(user.id as any, vijaya.id, 'General');
-            if (created?.data?.id) {
-              setThreadId(created.data.id);
-              const msgs = await chatApi.listMessages(created.data.id);
-              const list: ChatMessage[] = (msgs.data ?? []).map((m: any) => ({
-                id: m.id,
-                sender: (m.senderRole || 'STUDENT').toLowerCase(),
-                content: m.content,
-                at: new Date(m.createdAt || Date.now()).toLocaleTimeString(),
-              }));
-              setMessages(prev => ({ ...prev, 1: list }));
-            }
-          } catch { /* ignore, keep static */ }
+        // Load target counterpart based on role
+        // Student should see faculty (e.g., Vijaya)
+        // Faculty should see students (e.g., Deepak)
+        const isFaculty = user?.role === 'FACULTY';
+        const listRes = isFaculty ? await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/chat/students`).then(r=>r.json()) : await chatApi.listFaculty();
+        const list = (listRes.data ?? []).map((u: any) => ({ id: u.id, name: `${u.firstName} ${u.lastName}` }));
+        const target = list[0];
+        if (!target) return;
+
+        // Create or reuse a thread
+        if (!isFaculty) {
+          const created = await chatApi.createThread(user!.id as any, target.id, 'General');
+          if (created?.data?.id) {
+            setThreadId(created.data.id);
+          }
+          const initial: Thread = { id: 1, facultyName: target.name, subject: 'General', lastMessage: 'Say hello to start', lastAt: new Date().toLocaleString() };
+          setThreads([initial]);
+          setActiveId(1);
+        } else {
+          // Faculty view: show first student (Deepak)
+          const initial: Thread = { id: 1, facultyName: list[0].name, subject: 'General', lastMessage: 'Say hello to start', lastAt: new Date().toLocaleString() };
+          setThreads([initial]);
+          setActiveId(1);
         }
-      } catch (_e) {
-        // Fallback to static Vijaya K
-        const initial: Thread = { id: 1, facultyName: 'Vijaya K', subject: 'General', lastMessage: 'Say hello to start', lastAt: new Date().toLocaleString() };
-        setThreads([initial]);
-        setActiveId(1);
+      } catch {
+        // keep page usable
       }
     })();
-  }, []);
+  }, [user]);
 
   if (isLoading) {
     return (

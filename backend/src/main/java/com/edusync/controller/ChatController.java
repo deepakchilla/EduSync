@@ -47,6 +47,12 @@ public class ChatController {
         return ResponseEntity.ok(new ApiResponse(true, "Faculty", list));
     }
 
+    @GetMapping("/students")
+    public ResponseEntity<ApiResponse> listStudents() {
+        var list = userRepository.findByRole(User.UserRole.STUDENT);
+        return ResponseEntity.ok(new ApiResponse(true, "Students", list));
+    }
+
     @GetMapping("/threads/student/{studentId}")
     public ResponseEntity<ApiResponse> listStudentThreads(@PathVariable Long studentId) {
         List<ChatThread> threads = chatThreadRepository.findByStudentIdOrderByLastMessageAtDesc(studentId);
