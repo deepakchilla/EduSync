@@ -6,6 +6,7 @@ import com.edusync.entity.Resource;
 import com.edusync.service.FileStorageService;
 import com.edusync.service.UserService;
 import com.edusync.service.ResourceService;
+import com.edusync.service.SummaryService;
 import com.edusync.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -39,6 +40,9 @@ public class ResourceController {
 
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    private SummaryService summaryService;
 
     @GetMapping("/health")
     public ResponseEntity<ApiResponse> healthCheck() {
@@ -413,6 +417,81 @@ public class ResourceController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
                 new ApiResponse(false, "Failed to retrieve resources", null)
+            );
+        }
+    }
+
+    @PostMapping("/{resourceId}/summarize")
+    public ResponseEntity<ApiResponse> generateResourceSummary(@PathVariable Long resourceId) {
+        try {
+            System.out.println("=== GENERATING SUMMARY FOR RESOURCE ID: " + resourceId + " ===");
+            
+            // Check if resource exists
+            Optional<Resource> resourceOpt = resourceRepository.findById(resourceId);
+            if (!resourceOpt.isPresent()) {
+                return ResponseEntity.badRequest().body(
+                    new ApiResponse(false, "Resource not found with ID: " + resourceId, null)
+                );
+            }
+
+            Resource resource = resourceOpt.get();
+            System.out.println("Found resource: " + resource.getTitle());
+            System.out.println("File name: " + resource.getFileName());
+            System.out.println("File type: " + resource.getFileType());
+            
+            // Generate summary using the SummaryService
+            String summary = summaryService.generateResourceSummary(resourceId);
+            
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("resourceId", resourceId);
+            responseData.put("resourceTitle", resource.getTitle());
+            responseData.put("summary", summary);
+            responseData.put("summaryLength", summary.length());
+            responseData.put("cohereConfigured", summaryService.isCohereConfigured());
+            
+            System.out.println("Summary generated successfully, length: " + summary.length());
+            
+            return ResponseEntity.ok(
+                new ApiResponse(true, "Resource summary generated successfully", responseData)
+            );
+            
+        } catch (Exception e) {
+            System.err.println("Error generating summary for resource " + resourceId + ": " + e.getMessage());
+            e.printStackTrace();
+            
+            return ResponseEntity.internalServerError().body(
+                new ApiResponse(false, "Failed to generate resource summary: " + e.getMessage(), null)
+            );
+        }
+    }
+
+    @GetMapping("/{resourceId}/summary-status")
+    public ResponseEntity<ApiResponse> getSummaryStatus(@PathVariable Long resourceId) {
+        try {
+            Optional<Resource> resourceOpt = resourceRepository.findById(resourceId);
+            if (!resourceOpt.isPresent()) {
+                return ResponseEntity.badRequest().body(
+                    new ApiResponse(false, "Resource not found with ID: " + resourceId, null)
+                );
+            }
+
+            Resource resource = resourceOpt.get();
+            
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("resourceId", resourceId);
+            responseData.put("resourceTitle", resource.getTitle());
+            responseData.put("fileName", resource.getFileName());
+            responseData.put("fileType", resource.getFileType());
+            responseData.put("cohereConfigured", summaryService.isCohereConfigured());
+            responseData.put("canGenerateSummary", true);
+            
+            return ResponseEntity.ok(
+                new ApiResponse(true, "Summary status retrieved successfully", responseData)
+            );
+            
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                new ApiResponse(false, "Failed to get summary status: " + e.getMessage(), null)
             );
         }
     }

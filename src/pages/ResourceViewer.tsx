@@ -7,7 +7,6 @@ import { Header } from "@/components/Layout/Header";
 import { Footer } from "@/components/Layout/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { resourcesApi } from "@/services/api";
-import { summaryApi } from "@/services/summaryApi";
 import { useToast } from "@/hooks/use-toast";
 import { 
   ArrowLeft,
@@ -136,23 +135,36 @@ export default function ResourceViewer() {
     }
   };
 
-  // Function to generate AI summary using Cohere API
+  // Function to generate AI summary using Cohere API via ResourceController
   const generateSummary = async (resourceData: Resource) => {
     try {
       setIsGeneratingSummary(true);
       setSummaryError(null);
       
-      // Call the backend endpoint to generate summary using Cohere API
-      const response = await summaryApi.generateResourceSummary(resourceData.id);
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
       
-      if (response && response.summary) {
-        setAiSummary(response.summary);
-        toast({
-          title: "Summary Generated",
-          description: "AI has analyzed the file content and generated an educational summary.",
-        });
+      // Call the ResourceController endpoint directly
+      const response = await fetch(`${baseUrl}/resources/${resourceData.id}/summarize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data && data.data.summary) {
+          setAiSummary(data.data.summary);
+          toast({
+            title: "Summary Generated",
+            description: "AI has analyzed the file content and generated an educational summary.",
+          });
+        } else {
+          throw new Error(data.message || 'No summary received from the API');
+        }
       } else {
-        throw new Error('No summary received from the API');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: Failed to generate summary`);
       }
     } catch (error: any) {
       console.error('Error generating summary:', error);
