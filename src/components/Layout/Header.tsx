@@ -53,6 +53,7 @@ export function Header({ isAuthenticated = false, userRole, userName, user }: He
     { name: 'Dashboard', href: displayRole === 'FACULTY' ? '/faculty-dashboard' : '/dashboard', icon: BookOpen },
     ...(displayRole !== 'FACULTY' ? [{ name: 'Certifications', href: '/certifications', icon: Award }] : []),
     { name: 'Resources', href: '/resources', icon: BookOpen },
+    { name: 'Chat', href: '/chat', icon: Users },
     { name: 'About', href: '/about', icon: Users },
   ];
 
