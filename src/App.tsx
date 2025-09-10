@@ -22,6 +22,7 @@ import NotFound from "./pages/NotFound";
 import ActivityTracker from "./pages/ActivityTracker";
 import FacultyApprovals from "./pages/FacultyApprovals";
 import Certifications from "./pages/Certifications";
+import Chat from "./pages/Chat";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +74,11 @@ const App = () => {
                 <Route path="/settings" element={
                   <ProtectedRoute>
                     <Settings />
+                  </ProtectedRoute>
+                } />
+                <Route path="/chat" element={
+                  <ProtectedRoute>
+                    <Chat />
                   </ProtectedRoute>
                 } />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

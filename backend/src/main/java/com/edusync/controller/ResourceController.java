@@ -174,11 +174,22 @@ public class ResourceController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ApiResponse> getAllResources() {
+    public ResponseEntity<ApiResponse> getAllResources(
+            @RequestParam(required = false) String branch,
+            @RequestParam(required = false) String subject) {
         try {
-            List<com.edusync.entity.Resource> resources = resourceRepository.findAllByOrderByUploadedAtDesc();
+            List<com.edusync.entity.Resource> resources;
+            if (branch != null && !branch.isBlank() && !branch.equalsIgnoreCase("All")) {
+                if (subject != null && !subject.isBlank()) {
+                    resources = resourceRepository.findByBranchAndSubjectIgnoreCase(branch, subject);
+                } else {
+                    resources = resourceRepository.findByBranch(branch);
+                }
+            } else {
+                resources = resourceRepository.findAllByOrderByUploadedAtDesc();
+            }
             
-            // Convert to DTOs with proper structure
+            // Convert to DTOs with branch/subject
             List<Map<String, Object>> resourceDtos = resources.stream()
                 .map(resource -> {
                     Map<String, Object> dto = new HashMap<>();
@@ -190,6 +201,8 @@ public class ResourceController {
                     dto.put("fileType", resource.getFileType());
                     dto.put("uploadedBy", resource.getUploadedBy());
                     dto.put("uploadedAt", resource.getUploadedAt());
+                    dto.put("branch", resource.getBranch());
+                    dto.put("subject", resource.getSubject());
                     return dto;
                 })
                 .collect(java.util.stream.Collectors.toList());
