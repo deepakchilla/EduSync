@@ -21,7 +21,7 @@ public class ResourceService {
 
     // Upload resource with branch
     public Resource saveResource(MultipartFile file, String title, String description,
-                                 String fileType, Long uploadedBy, String branch) throws IOException {
+                                 String fileType, Long uploadedBy, String branch, String subject) throws IOException {
         // Save file to disk
         String storedFileName = fileStorageService.storeResourceFile(file);
 
@@ -34,6 +34,9 @@ public class ResourceService {
         resource.setFileType(fileType);
         resource.setUploadedBy(uploadedBy);
         resource.setBranch(branch);
+        if (subject != null && !subject.isBlank()) {
+            resource.setSubject(subject);
+        }
 
         return resourceRepository.save(resource);
     }

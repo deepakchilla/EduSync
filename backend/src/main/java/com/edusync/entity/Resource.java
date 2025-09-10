@@ -56,6 +56,11 @@ public class Resource {
     @Column(nullable = false)
     private String branch;
     
+    // Optional subject tag
+    @Size(max = 100, message = "Subject must be less than 100 characters")
+    @Column(name = "subject")
+    private String subject;
+    
     // Default constructor
     public Resource() {
         this.uploadedAt = LocalDateTime.now();
@@ -141,5 +146,11 @@ public class Resource {
     }
     public void setBranch(String branch) {
         this.branch = branch;
+    }
+    public String getSubject() {
+        return subject;
+    }
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 }

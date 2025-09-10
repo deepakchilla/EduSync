@@ -22,6 +22,7 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     List<Resource> findByFileTypeContainingIgnoreCaseOrderByUploadedAtDesc(String fileType);
     
     List<Resource> findByBranch(String branch);   // ✅ filter by branch
+    List<Resource> findByBranchAndSubjectIgnoreCase(String branch, String subject);
 
     // Search resources by title or description
     @Query("SELECT r FROM Resource r WHERE " +

@@ -78,7 +78,9 @@ public class ResourceController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-            @RequestParam("userEmail") String userEmail) {
+            @RequestParam("userEmail") String userEmail,
+            @RequestParam("branch") String branch,
+            @RequestParam(value = "subject", required = false) String subject) {
         
         System.out.println("=== RESOURCE UPLOAD REQUEST ===");
         System.out.println("Title: " + title);
@@ -130,6 +132,10 @@ public class ResourceController {
             resource.setFileType(file.getContentType());
             resource.setUploadedBy(user.getId());
             resource.setUploadedAt(LocalDateTime.now());
+            resource.setBranch(branch);
+            if (subject != null && !subject.isBlank()) {
+                resource.setSubject(subject);
+            }
             
             // Save to database
             com.edusync.entity.Resource savedResource = resourceRepository.save(resource);
@@ -398,11 +404,17 @@ public class ResourceController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<ApiResponse> getResources(@RequestParam(required = false) String branch) {
+    public ResponseEntity<ApiResponse> getResources(
+            @RequestParam(required = false) String branch,
+            @RequestParam(required = false) String subject) {
         try {
             List<Resource> resources;
             if (branch != null && !branch.equalsIgnoreCase("All")) {
-                resources = resourceService.getResourcesByBranch(branch);
+                if (subject != null && !subject.isBlank()) {
+                    resources = resourceRepository.findByBranchAndSubjectIgnoreCase(branch, subject);
+                } else {
+                    resources = resourceService.getResourcesByBranch(branch);
+                }
             } else {
                 resources = resourceService.getAllResources();
             }
